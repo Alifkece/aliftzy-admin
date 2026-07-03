@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// ============================================================================
+// ALIFTZY — FIRESTORE SECURITY RULES (PRODUCTION)
+// ============================================================================
+// File ini disertakan HANYA sebagai REFERENSI/DOKUMENTASI di repository
+// Admin — isinya adalah rules yang Anda tetapkan sebagai acuan utama,
+// disalin APA ADANYA, TANPA satu pun perubahan. Admin TIDAK men-deploy
+// rules ini secara otomatis dan tidak mensyaratkan perubahan apa pun
+// terhadapnya. Deploy rules tetap dilakukan manual oleh Anda melalui
+// Firebase Console / Firebase CLI, terpisah dari repository ini.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.token.email == "aliftzy@my.id";
+    }
+
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userIdField) {
+      return isLoggedIn() && request.auth.uid == userIdField;
+    }
+
+    // ADMIN CONFIG
+    match /settings/adminConfig {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // PRODUCTS
+    match /products/{docId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+
+    // SONGS
+    match /songs/{docId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+
+    // SETTINGS
+    match /settings/{docId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+
+    // ANNOUNCEMENTS
+    match /announcements/{docId} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
+
+    // STOCK
+    match /stock/{docId} {
+      allow read: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ORDERS
+    match /orders/{orderId} {
+
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+
+      allow create: if isLoggedIn()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.status == "PENDING";
+
+      allow update: if isAdmin();
+
+      allow delete: if isAdmin();
+    }
+
+    // DENY SEMUA YANG LAIN
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+  }
+}
