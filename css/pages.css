@@ -1,0 +1,64 @@
+/* ==========================================================================
+   ALIFTZY ADMIN — PAGE LAYOUTS
+   ========================================================================== */
+
+.page-header { margin-bottom: 22px; }
+.page-header h1 { font-size: 21px; }
+.page-header p { font-size: 12.5px; color: var(--text-3); margin-top: 4px; }
+
+/* ---------- Dashboard ---------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 18px;
+}
+@media (max-width: 980px) { .dash-grid { grid-template-columns: 1fr; } }
+
+.mini-list { display: flex; flex-direction: column; }
+.mini-list-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.mini-list-item:last-child { border-bottom: none; }
+.mini-list-item .mli-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mini-list-item .mli-body { flex: 1; min-width: 0; }
+.mini-list-item .mli-title { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-list-item .mli-sub { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.mini-list-item .mli-right { text-align: right; flex-shrink: 0; }
+.mini-list-item .mli-amount { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; }
+
+.progress-track { height: 8px; border-radius: var(--r-pill); background: var(--panel-solid); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--signal), var(--cyan)); transition: width var(--dur-slow) var(--ease); }
+
+.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding: 6px 4px; }
+.bar-chart .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.bar-chart .bar { width: 100%; border-radius: 6px 6px 3px 3px; background: linear-gradient(180deg, var(--signal), var(--signal-2)); transition: height var(--dur-slow) var(--ease); min-height: 3px; }
+.bar-chart .bar-label { font-size: 10px; color: var(--text-3); font-family: var(--font-mono); }
+
+/* ---------- Product grid (card view alt) ---------- */
+.product-tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+.product-tile { border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; background: var(--panel-solid); transition: all var(--dur) var(--ease-soft); }
+.product-tile:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.product-tile img { width: 100%; height: 110px; object-fit: cover; display: block; background: var(--panel-2); }
+
+/* ---------- Order detail ---------- */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.detail-item { background: var(--panel-solid); border: 1px solid var(--border-soft); border-radius: var(--r-sm); padding: 10px 12px; }
+.detail-item label { display: block; font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+.detail-item div.val { font-size: 13px; word-break: break-word; }
+
+/* ---------- Profile ---------- */
+.profile-grid { display: grid; grid-template-columns: 260px 1fr; gap: 18px; }
+@media (max-width: 860px) { .profile-grid { grid-template-columns: 1fr; } }
+.profile-card { text-align: center; padding: 30px 22px; }
+.profile-avatar { width: 78px; height: 78px; border-radius: 50%; margin: 0 auto 14px; background: linear-gradient(135deg, var(--signal), var(--cyan)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 26px; font-weight: 700; color: #fff; }
+
+/* Login page centered container tweaks */
+.auth-tab-row { display: none; }
