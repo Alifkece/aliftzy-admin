@@ -1,191 +1,505 @@
+<div align="center">
+
+<img src="assets/banner.png" alt="Aliftzy Admin Banner" width="100%">
+
+<br><br>
+
 # Aliftzy Admin
 
-Dashboard Admin terpisah untuk **Aliftzy Store**, dibangun sebagai referensi
-terhadap repository `Aliftzy-Store` yang dikirim (tidak ada satu baris pun
-di repository Store yang diubah).
+<strong>The control-plane dashboard for Aliftzy Store</strong><br>
+A zero-build, Firebase-native admin panel written in vanilla JavaScript ES Modules.
+
+<br>
+
+<img src="https://img.shields.io/badge/version-1.0.0-6C63FF?style=for-the-badge&labelColor=0B0C10" alt="Version">
+<img src="https://img.shields.io/badge/status-active-2ECC71?style=for-the-badge&labelColor=0B0C10" alt="Status">
+<img src="https://img.shields.io/badge/build-no%20bundler-222533?style=for-the-badge&labelColor=0B0C10" alt="No Build Step">
+<img src="https://img.shields.io/badge/license-proprietary-F5A623?style=for-the-badge&labelColor=0B0C10" alt="License">
+
+<br><br>
+
+<img src="https://cdn.simpleicons.org/html5/E34F26" width="28" title="HTML5">
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="28" title="CSS3">
+<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="28" title="JavaScript">
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="28" title="Firebase">
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="28" title="Firestore">
+<img src="https://cdn.simpleicons.org/git/F05032" width="28" title="Git">
+<img src="https://cdn.simpleicons.org/github/FFFFFF" width="28" title="GitHub">
+<img src="https://cdn.simpleicons.org/vercel/FFFFFF" width="28" title="Vercel">
+<img src="https://cdn.simpleicons.org/netlify/00C7B7" width="28" title="Netlify">
+
+</div>
+
+<br>
+
+<div align="center">
+
+**[Overview](#overview)** · **[Features](#features)** · **[Screenshots](#screenshots)** · **[Technologies](#technologies)** · **[Project Structure](#project-structure)** · **[Database](#database)** · **[Security](#security)** · **[Deployment](#deployment)** · **[Developer](#developer)** · **[License](#license)**
+
+</div>
+
+<br>
 
 ---
 
-## 1. Ringkasan Arsitektur
+<h2 id="overview">
+<img src="https://cdn.simpleicons.org/readme/E44B23" width="24" align="center">&nbsp;
+Overview
+</h2>
 
-- **Jenis aplikasi**: situs statis (tanpa build step/bundler) — HTML + CSS +
-  JavaScript ES Modules, persis pola yang sudah dipakai `Aliftzy-Store`
-  (import Firebase langsung dari CDN `gstatic.com`). Ini dipilih supaya
-  Admin bisa di-deploy ke Vercel/Firebase Hosting/Netlify tanpa Node build
-  step, dan agar tetap konsisten dengan gaya teknis repo Store.
-- **Struktur folder**:
-  ```
-  Aliftzy-Admin/
-    index.html                 # shell: login screen + app shell + router outlet
-    firestore.rules            # referensi security rules (deploy manual)
-    package.json
-    css/
-      tokens.css                # design tokens (warna, tipografi, radius, motion)
-      base.css                  # reset & tipografi dasar
-      layout.css                 # sidebar, topbar, shell, auth screen
-      components.css             # tombol, card, tabel, modal, toast, form, badge
-      animations.css             # transisi halaman, stagger, reduced-motion
-      pages.css                  # layout khusus per halaman
-    js/
-      firebase-config.js         # SAMA PERSIS dengan project Firebase Store
-      router.js                  # hash router ringan (#/dashboard, #/products, ...)
-      app.js                     # entry point: auth flow + wiring shell
-      utils/                     # format.js, dom.js
-      services/                  # 1 file = 1 collection Firestore
-        authService.js
-        productsService.js
-        stockService.js
-        ordersService.js
-        songsService.js
-        announcementsService.js
-        settingsService.js
-        statsService.js
-      components/                # UI reusable: sidebar, topbar, modal,
-                                  # confirmDialog, toast, skeleton, state (empty/error)
-      pages/                     # 1 file = 1 halaman dashboard
-        dashboard.js, products.js, stock.js, orders.js,
-        songs.js, announcements.js, settings.js, profile.js
-  ```
-- **Pola arsitektur**: setiap Firestore collection punya satu `service`
-  (lapisan akses data), setiap halaman punya satu `page` module yang
-  memanggil service tsb dan merender UI ke `<main id="page-content">` lewat
-  router. Komponen UI (modal, toast, dsb) dipisah agar dipakai ulang di
-  semua halaman — tidak ada duplikasi markup modal/toast.
-- **Autentikasi & otorisasi Admin**: login memakai Firebase Authentication
-  (project sama dengan Store). Status admin di rules Anda ditentukan oleh
-  **email** (`request.auth.token.email == "aliftzy@my.id"`), bukan
-  collection terpisah. Supaya frontend tidak menduplikasi hardcode email
-  ini (dan berpotensi tidak sinkron kalau rules berubah), `authService.
-  checkIsAdmin()` memverifikasi status admin dengan **mencoba membaca**
-  `settings/adminConfig` — dokumen yang rules-nya sudah mensyaratkan
-  `isAdmin()`. Kalau request diizinkan, berarti Firestore sendiri sudah
-  mengonfirmasi user tsb admin. Jika ditolak (`permission-denied`), sesi
-  langsung di-sign-out dan pengguna ditolak masuk ke Dashboard.
+**Aliftzy Admin** is the standalone administrative dashboard for **Aliftzy Store**, a Firebase-backed digital subscription storefront. It is built as a completely separate repository that reads and writes to the **exact same Firebase project** as the Store — no intermediary API, no data duplication, no separate backend.
+
+Every change made in Aliftzy Admin is reflected in Aliftzy Store the moment the Store re-fetches data. The two codebases never touch: this repository does not alter a single line, collection, field, or security rule belonging to the Store.
+
+Design principles behind this project:
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+**Zero build step**
+Pure HTML, CSS, and JavaScript ES Modules. Firebase is imported directly from the `gstatic.com` CDN — no bundler, no transpiler, no `node_modules`.
+
+</td>
+<td width="50%" valign="top">
+
+**Surgical compatibility**
+Every new field or capability is additive. The Store's existing read paths, field names, and document shapes are never modified or removed.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+**Rules-first architecture**
+The dashboard is designed *around* the production Firestore Security Rules — not the other way around. No new collections, subcollections, or rule changes are introduced.
+
+</td>
+<td width="50%" valign="top">
+
+**Component-driven UI**
+Reusable modal, toast, skeleton, and empty/error-state components back every page, so the interface stays consistent without markup duplication.
+
+</td>
+</tr>
+</table>
+
+<br>
 
 ---
 
-## 2. Bagaimana Admin Terhubung ke Store (Firebase/Firestore)
+<h2 id="features">
+<img src="https://cdn.simpleicons.org/checkmarx/00CBA6" width="24" align="center">&nbsp;
+Features
+</h2>
 
-Admin dan Store menunjuk ke **project Firebase yang benar-benar sama**
-(`aliftzy-store`), dengan `firebase-config.js` yang identik. Karena
-keduanya membaca/menulis Firestore yang sama secara langsung (tanpa API
-perantara), setiap perubahan dari Admin **langsung** terlihat di Store
-begitu Store melakukan fetch berikutnya (refresh / navigasi halaman) —
-tanpa deploy ulang, tanpa sinkronisasi manual.
+<table>
+<thead>
+<tr>
+<th align="left">Module</th>
+<th align="left">Description</th>
+<th align="center">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dashboard</strong></td>
+<td>Live stats — total products, orders, pending/paid orders, stock levels, estimated revenue, recent-orders feed, and status distribution.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Products</strong></td>
+<td>Full CRUD, multi-package pricing editor, category filtering, live search, and a real-time preview card that updates as you type.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Media Manager</strong></td>
+<td>Drag-and-drop upload for images, video, and audio with live progress, previews, one-click URL copy, and search/filter by type.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Music</strong></td>
+<td>Playlist manager with drag-to-reorder, thumbnails, and a sticky mini player — play/pause, next/previous, shuffle, repeat, volume, and an animated equalizer.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Stock</strong></td>
+<td>Credential inventory per product (email / password / notes), availability toggling, and status + product filtering.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Orders</strong></td>
+<td>Search by product, transaction ID, or user; status filtering; manual status updates; automatic credential delivery from available Stock.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Announcements</strong></td>
+<td>CRUD for storefront banners — title, message, type (info / warning / update / important), and active/inactive toggling.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Settings</strong></td>
+<td>Store profile management — name, WhatsApp contact, description, and avatar/media upload.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Profile</strong></td>
+<td>Signed-in admin account details, password change, and logout.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Keyboard Shortcuts</strong></td>
+<td><kbd>Ctrl/⌘ S</kbd> save, <kbd>Ctrl/⌘ F</kbd> search, <kbd>Ctrl/⌘ N</kbd> new item, <kbd>Esc</kbd> close modal.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+<tr>
+<td><strong>Interface System</strong></td>
+<td>Dark glassmorphism "Signal Room" theme, skeleton loading, toast notifications, confirmation dialogs, empty/error states, and a responsive collapsible sidebar.</td>
+<td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
+</tr>
+</tbody>
+</table>
 
-Collection yang dipakai bersama (diverifikasi langsung dari kode
-`Aliftzy-Store/js/app.js` dan `api/webhook.js`):
-
-| Collection | Dibaca Store dari | Field yang dipakai Store | Ditulis Admin dari |
-|---|---|---|---|
-| `products` | `loadProducts()` | `name, category, price, desc, badge, img, link, packages[]` | `productsService.js` |
-| `songs` | `loadSongs()` | `title, artist, url` | `songsService.js` |
-| `stock` | `loadStockPublic()` | `productId, sold` (untuk badge "x/y tersedia") | `stockService.js` |
-| `announcements` | `loadAnnouncements()` | `title, msg, type, active, createdAt` (angka epoch, bukan Timestamp — lihat catatan) | `announcementsService.js` |
-| `settings/store` | `loadStoreProfile()` | `avatarUrl` | `settingsService.js` |
-| `orders` | `loadMyOrders()` (milik user sendiri) | `productName, price, status, createdAt, deliveredEmail, deliveredPassword, deliveredLoginUrl, deliveredNote` | `ordersService.js` (update saja, order dibuat backend pembayaran) |
-
-**Field tambahan yang dibuat Admin** (tidak mengubah field yang sudah
-dipakai Store, hanya menambah):
-- `stock`: `label, email, password, note, assignedOrderId, createdAt` —
-  seluruhnya di dokumen `stock/{id}` yang sama (flat, tanpa subcollection),
-  karena Firestore Rules production sudah mengunci seluruh collection ini
-  `allow read/write: if isAdmin()`. Store tetap hanya membaca `productId`
-  & `sold`; field lain diabaikan dengan aman.
-- `settings/store`: `storeName, whatsapp, description` — disiapkan untuk
-  kebutuhan Admin/pembaruan Store berikutnya; Store versi yang dikirim
-  mengabaikannya secara aman.
-- `orders`: `deliveredAt, statusUpdatedAt` — metadata proses, tidak
-  memengaruhi field yang dibaca Store.
-
-**Tidak ada collection atau subcollection baru** yang dibuat. Status
-admin memakai mekanisme email yang sudah ada di rules Anda
-(`request.auth.token.email == "aliftzy@my.id"`) — lihat bagian
-Autentikasi di bawah.
-
-**Catatan kompatibilitas penting**: `announcements.createdAt` di Store
-diurutkan dengan `(b.createdAt||0) - (a.createdAt||0)` — operasi
-pengurangan angka biasa. Karena itu `announcementsService.js` sengaja
-menyimpan `createdAt` sebagai **epoch milliseconds** (`Date.now()`),
-BUKAN Firestore `Timestamp`, supaya sorting di Store tidak rusak.
-
-**Catatan faktual (bukan permintaan perubahan)**: dengan rules production
-saat ini, `stock` hanya bisa dibaca akun admin. `Aliftzy-Store/js/app.js`
-punya `loadStockPublic()` yang dipanggil semua user login untuk badge
-"x/y tersedia" — pemanggilan itu akan mendapat `permission-denied` untuk
-user non-admin. Ini adalah konsekuensi dari rules yang sudah Anda
-tetapkan sebagai acuan utama, sehingga repository Admin ini mengikutinya
-apa adanya tanpa mengusulkan perubahan rules maupun struktur database,
-sesuai instruksi Anda.
-
----
-
-## 3. Daftar Fitur
-
-**Dashboard**
-- Statistik: Total Produk, Total Order, Pending Order, Paid Order, Total
-  Stok, Stok Tersedia, Total User (didekati dari `userId` unik di
-  `orders`, karena Store tidak punya collection `users`), Penghasilan
-  (dijumlahkan dari order berstatus PAID/DELIVERED)
-- Order terbaru (10 terakhir) & grafik distribusi status order
-- Skeleton loading saat data dimuat, error state jika Firestore gagal
-
-**Produk** — CRUD penuh: nama, kategori, harga, deskripsi, badge, link
-fallback WhatsApp, upload gambar (Firebase Storage), editor multi-paket
-harga (opsional). Search realtime + filter kategori.
-
-**Stock** — CRUD akun per produk (email, password, catatan), tandai
-tersedia/terjual, search + filter produk + filter status.
-
-**Orders** — daftar semua order, search (produk/ID transaksi/user),
-filter status, detail order lengkap, ubah status manual, proses
-pengiriman akun (isi otomatis dari Stock yang tersedia atau manual),
-otomatis menandai stok terpakai sebagai terjual.
-
-**Songs** — CRUD judul, artis, URL audio untuk playlist Store.
-
-**Announcements** — CRUD judul, pesan, tipe (info/peringatan/update/
-penting), status aktif/nonaktif.
-
-**Settings** — kelola profil toko (`settings/store`): avatar/video
-(upload atau URL langsung), nama toko, WhatsApp, deskripsi. Halaman
-menjelaskan secara eksplisit field mana yang benar-benar dipakai Store
-saat ini.
-
-**Profile** — info akun Admin yang login, ubah kata sandi, logout.
-
-**Pengalaman pengguna** (sesuai brief):
-Sidebar animasi + collapsible + responsive drawer di mobile, smooth page
-transition, skeleton loading, toast notification, modal dengan animasi
-buka/tutup, hover & card animation, empty state & error state khusus di
-setiap tabel, confirmation dialog sebelum aksi hapus/kirim akun, search
-realtime + filter chip di setiap halaman data, tema dark glassmorphism
-dengan aksen indigo/amber ("Signal Room" — lihat `css/tokens.css`).
+<br>
 
 ---
 
-## 4. Sebelum Dipakai di Production
+<h2 id="screenshots">
+<img src="https://cdn.simpleicons.org/googlephotos/4285F4" width="24" align="center">&nbsp;
+Screenshots
+</h2>
 
-1. **Login admin**: gunakan akun Firebase Authentication dengan email
-   persis `aliftzy@my.id` (sesuai `isAdmin()` di rules production Anda).
-   Tidak perlu setup collection/subcollection tambahan apa pun.
-2. Rules **tidak perlu diubah atau di-deploy ulang** — repository Admin
-   ini dibangun mengikuti rules yang Anda kirim apa adanya
-   (`firestore.rules` di root repo hanya salinan referensi/dokumentasi).
-3. Pastikan **Firebase Storage** aktif di project (dipakai untuk upload
-   gambar produk & avatar toko — di luar cakupan Firestore Rules di atas).
-4. Jalankan lokal tanpa build step: buka `index.html` lewat static server
-   apa pun, mis. `npx serve .` atau `python3 -m http.server`.
+<table>
+<tr>
+<td align="center" width="50%">
+<img src="assets/dashboard.jpg" alt="Dashboard" width="100%"><br>
+<sub><strong>Dashboard</strong> — live statistics &amp; order overview</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/products.jpg" alt="Products" width="100%"><br>
+<sub><strong>Products</strong> — catalog management &amp; live preview</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="assets/media.jpg" alt="Media Manager" width="100%"><br>
+<sub><strong>Media</strong> — drag-and-drop upload manager</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/music.jpg" alt="Music" width="100%"><br>
+<sub><strong>Music</strong> — playlist &amp; mini player</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<img src="assets/orders.jpg" alt="Orders" width="100%"><br>
+<sub><strong>Orders</strong> — order management &amp; delivery</sub>
+</td>
+<td align="center" width="50%">
+<img src="assets/settings.jpg" alt="Settings" width="100%"><br>
+<sub><strong>Settings</strong> — store profile configuration</sub>
+</td>
+</tr>
+</table>
 
-## Audit yang Sudah Dilakukan
+<br>
 
-- Seluruh file JavaScript lolos `node --check` (parse ES module valid,
-  tidak ada Syntax Error).
-- Semua `id` yang dipanggil `getElementById`/`querySelector("#...")` oleh
-  shell (`app.js`, `sidebar.js`, `topbar.js`, `router.js`) diverifikasi
-  ada di `index.html`.
-- Semua `id` yang dipakai tiap `page` module diverifikasi didefinisikan
-  di template halaman itu sendiri (tidak ada referensi ke elemen yang
-  belum dirender).
-- CSS diverifikasi seimbang kurung kurawal di seluruh file `css/*.css`.
-- Tidak ada perubahan pada file di dalam `Aliftzy-Store/` yang dikirim.
+---
+
+<h2 id="technologies">
+<img src="https://cdn.simpleicons.org/vite/646CFF" width="24" align="center">&nbsp;
+Technologies
+</h2>
+
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br><sub><strong>HTML5</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="40"><br><sub><strong>CSS3</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br><sub><strong>JavaScript</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="40"><br><sub><strong>Firebase Auth</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="40"><br><sub><strong>Firestore</strong></sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/git/F05032" width="40"><br><sub><strong>Git</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/github/FFFFFF" width="40"><br><sub><strong>GitHub</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/vercel/FFFFFF" width="40"><br><sub><strong>Vercel</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/netlify/00C7B7" width="40"><br><sub><strong>Netlify</strong></sub>
+</td>
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="40"><br><sub><strong>Web SDK v10</strong></sub>
+</td>
+</tr>
+</table>
+
+</div>
+
+> This project intentionally ships **without a bundler**. Firebase is loaded straight from the `gstatic.com` CDN, matching the exact technical pattern used by Aliftzy Store, so both codebases can be deployed to any static host with zero configuration.
+
+<br>
+
+---
+
+<h2 id="project-structure">
+<img src="https://cdn.simpleicons.org/files/4A90D9" width="24" align="center">&nbsp;
+Project Structure
+</h2>
+
+```text
+Aliftzy-Admin/
+├── index.html                  # Login screen + app shell + router outlet
+├── firestore.rules             # Reference copy of production rules (never deployed from here)
+├── package.json
+│
+├── css/
+│   ├── tokens.css              # Design tokens — color, type scale, radius, motion
+│   ├── base.css                # Reset & base typography
+│   ├── layout.css              # Sidebar, topbar, shell, auth screen
+│   ├── components.css          # Buttons, cards, tables, modals, toasts, forms, badges
+│   ├── animations.css          # Page transitions, stagger effects, reduced-motion
+│   └── pages.css                # Per-page layout (Media grid, Music player, previews)
+│
+└── js/
+    ├── firebase-config.js      # Identical to Aliftzy-Store's Firebase project config
+    ├── router.js                # Lightweight hash router (#/dashboard, #/products, ...)
+    ├── app.js                   # Entry point — auth flow, shell wiring, keyboard shortcuts
+    │
+    ├── utils/
+    │   ├── format.js             # Currency, date, string, and ID helpers
+    │   └── dom.js                 # DOM query & file-reading helpers
+    │
+    ├── services/                # One file = one Firestore collection (or document)
+    │   ├── authService.js
+    │   ├── productsService.js
+    │   ├── stockService.js
+    │   ├── ordersService.js
+    │   ├── songsService.js
+    │   ├── announcementsService.js
+    │   ├── settingsService.js
+    │   ├── statsService.js
+    │   ├── mediaService.js        # Media library metadata → settings/mediaLibrary
+    │   └── uploadService.js       # Browser-side transport for the media upload API
+    │
+    ├── components/               # Reusable UI — no markup duplication across pages
+    │   ├── sidebar.js
+    │   ├── topbar.js
+    │   ├── modal.js
+    │   ├── confirmDialog.js
+    │   ├── toast.js
+    │   ├── skeleton.js
+    │   └── state.js                # Empty / error state blocks
+    │
+    └── pages/                    # One file = one dashboard route
+        ├── dashboard.js
+        ├── products.js
+        ├── stock.js
+        ├── orders.js
+        ├── songs.js                # "Music" route
+        ├── media.js
+        ├── announcements.js
+        ├── settings.js
+        └── profile.js
+```
+
+<br>
+
+---
+
+<h2 id="database">
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="24" align="center">&nbsp;
+Database
+</h2>
+
+Aliftzy Admin and Aliftzy Store share **one Firestore database** inside the same Firebase project. There is no API layer between them — both read and write Firestore directly, so changes propagate as soon as the other side re-fetches.
+
+<table>
+<thead>
+<tr>
+<th align="left">Collection / Document</th>
+<th align="left">Read by Store via</th>
+<th align="left">Fields Store consumes</th>
+<th align="left">Written by</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><code>products</code></td><td><code>loadProducts()</code></td><td><code>name, category, price, desc, badge, img, link, packages[]</code></td><td><code>productsService.js</code></td></tr>
+<tr><td><code>songs</code></td><td><code>loadSongs()</code></td><td><code>title, artist, url</code></td><td><code>songsService.js</code></td></tr>
+<tr><td><code>stock</code></td><td><code>loadStockPublic()</code></td><td><code>productId, sold</code></td><td><code>stockService.js</code></td></tr>
+<tr><td><code>announcements</code></td><td><code>loadAnnouncements()</code></td><td><code>title, msg, type, active, createdAt</code> (epoch ms)</td><td><code>announcementsService.js</code></td></tr>
+<tr><td><code>settings/store</code></td><td><code>loadStoreProfile()</code></td><td><code>avatarUrl</code></td><td><code>settingsService.js</code></td></tr>
+<tr><td><code>orders</code></td><td><code>loadMyOrders()</code></td><td><code>productName, price, status, createdAt, delivered*</code></td><td><code>ordersService.js</code> (update only)</td></tr>
+<tr><td><code>settings/mediaLibrary</code></td><td><em>Admin-only</em></td><td>—</td><td><code>mediaService.js</code></td></tr>
+</tbody>
+</table>
+
+<blockquote>
+
+**No new collections. No new subcollections.** Every additive field (e.g. `songs.thumbnail`, `songs.order`, `stock.label`) is written alongside the fields the Store already reads — the Store ignores unknown fields safely, so backward compatibility is guaranteed by design, not by convention.
+
+</blockquote>
+
+<br>
+
+---
+
+<h2 id="security">
+<img src="https://cdn.simpleicons.org/letsencrypt/003A70" width="24" align="center">&nbsp;
+Security
+</h2>
+
+<table>
+<tr>
+<td width="28"><img src="https://cdn.simpleicons.org/firebase/FFCA28" width="22"></td>
+<td><strong>Authentication</strong><br>Firebase Authentication (email &amp; password), pointed at the same project as the Store. No parallel identity system.</td>
+</tr>
+<tr>
+<td width="28"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22"></td>
+<td><strong>Firestore Rules</strong><br>Admin status is resolved by <code>request.auth.token.email</code> via an <code>isAdmin()</code> rule function — never hardcoded on the client. The dashboard verifies admin access by attempting to read <code>settings/adminConfig</code>, a document the rules already gate behind <code>isAdmin()</code>. A denied read immediately signs the session out.</td>
+</tr>
+<tr>
+<td width="28"><img src="https://cdn.simpleicons.org/socketdotio/010101" width="22"></td>
+<td><strong>Realtime Sync</strong><br>No intermediary API or webhook queue — Admin and Store read/write the same Firestore instance directly, so state is always consistent.</td>
+</tr>
+<tr>
+<td width="28"><img src="https://cdn.simpleicons.org/git/F05032" width="22"></td>
+<td><strong>Repository Separation</strong><br>Aliftzy Admin is a fully independent repository. It has never modified a line of code, a field, or a rule inside Aliftzy Store.</td>
+</tr>
+<tr>
+<td width="28"><img src="https://cdn.simpleicons.org/checkmarx/00CBA6" width="22"></td>
+<td><strong>Ownership Validation</strong><br>Order documents are gated with <code>isOwner(resource.data.userId)</code> — a customer can only ever read their own orders; only an admin can update or delete them.</td>
+</tr>
+</table>
+
+<br>
+
+---
+
+<h2 id="deployment">
+<img src="https://cdn.simpleicons.org/vercel/FFFFFF" width="24" align="center">&nbsp;
+Deployment
+</h2>
+
+Because there is no build step, Aliftzy Admin can be deployed to **any static host**.
+
+<table>
+<thead>
+<tr><th align="left">Step</th><th align="left">Command / Action</th></tr>
+</thead>
+<tbody>
+<tr><td>1&nbsp;·&nbsp;Clone</td><td><code>git clone &lt;repository-url&gt;</code></td></tr>
+<tr><td>2&nbsp;·&nbsp;Run locally</td><td><code>npx serve .</code> &nbsp;or&nbsp; <code>python3 -m http.server</code></td></tr>
+<tr><td>3&nbsp;·&nbsp;Deploy</td><td>Upload the repository as-is to Vercel, Netlify, Firebase Hosting, or GitHub Pages</td></tr>
+<tr><td>4&nbsp;·&nbsp;Authorize domain</td><td>Add the deployed domain under <em>Firebase Console → Authentication → Settings → Authorized domains</em></td></tr>
+<tr><td>5&nbsp;·&nbsp;Sign in</td><td>Log in with the Firebase account whose email matches <code>isAdmin()</code> in the production rules</td></tr>
+</tbody>
+</table>
+
+> Firestore Security Rules are **never deployed from this repository**. The `firestore.rules` file here is a reference copy for documentation only — rule changes are always deployed manually via the Firebase Console or CLI.
+
+<br>
+
+---
+
+<h2 id="developer">
+<img src="https://cdn.simpleicons.org/aboutdotme/00B0AE" width="24" align="center">&nbsp;
+Developer
+</h2>
+
+<table>
+<tr>
+<td width="160" valign="top">
+<img src="assets/developer.jpg" alt="Tuan Aliff" width="140" style="border-radius:12px;">
+</td>
+<td valign="top">
+
+### Tuan Aliff
+**Creator &amp; Maintainer — Aliftzy Store &amp; Aliftzy Admin**
+
+Builds and maintains both the customer-facing storefront and this administrative dashboard as a matched pair of repositories sharing one Firebase project — favoring small, surgical, verifiable changes over large rewrites.
+
+<br>
+
+**Stack focus**
+
+<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="22" title="JavaScript">
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="22" title="Firebase">
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22" title="Firestore">
+<img src="https://cdn.simpleicons.org/html5/E34F26" width="22" title="HTML5">
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="22" title="CSS3">
+<img src="https://cdn.simpleicons.org/git/F05032" width="22" title="Git">
+
+</td>
+</tr>
+</table>
+
+<br>
+
+---
+
+<h2 id="project-information">
+<img src="https://cdn.simpleicons.org/googledocs/4285F4" width="24" align="center">&nbsp;
+Project Information
+</h2>
+
+<table>
+<tr><td><strong>Project</strong></td><td>Aliftzy Admin</td></tr>
+<tr><td><strong>Companion Project</strong></td><td>Aliftzy Store</td></tr>
+<tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
+<tr><td><strong>Architecture</strong></td><td>Static site — vanilla JavaScript ES Modules + Firebase Web SDK v10 (CDN)</td></tr>
+<tr><td><strong>Build Tooling</strong></td><td>None — no bundler, no framework</td></tr>
+<tr><td><strong>Developer</strong></td><td>Tuan Aliff</td></tr>
+</table>
+
+<br>
+
+---
+
+<h2 id="license">
+<img src="https://cdn.simpleicons.org/readthedocs/8CA1AF" width="24" align="center">&nbsp;
+License
+</h2>
+
+This project is **proprietary and closed-source**. All rights are reserved by the developer.
+
+No portion of this repository — code, design system, or assets — may be copied, redistributed, or used in another project without explicit written permission.
+
+<br>
+
+---
+
+<div align="center">
+
+<br>
+
+### Aliftzy Admin
+
+<sub>Version 1.0.0 · Built by <strong>Tuan Aliff</strong></sub>
+
+<br><br>
+
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="18">&nbsp;
+<sub>Powered by Firebase &amp; Firestore</sub>
+
+<br><br>
+
+<sub>© 2026 Aliftzy. All rights reserved.</sub>
+
+</div>
