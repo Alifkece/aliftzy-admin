@@ -7,7 +7,7 @@
 # Aliftzy Admin
 
 <strong>The control-plane dashboard for Aliftzy Store</strong><br>
-A zero-build, Firebase-native admin panel written in vanilla JavaScript ES Modules.
+A zero-build administrative dashboard built with vanilla JavaScript ES Modules, powered by Firebase and a fully local file-based music library.
 
 <br>
 
@@ -19,7 +19,7 @@ A zero-build, Firebase-native admin panel written in vanilla JavaScript ES Modul
 <br><br>
 
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="28" title="HTML5">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="28" title="CSS3">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="28" title="JavaScript">
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="28" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="28" title="Firestore">
@@ -49,7 +49,7 @@ Overview
 
 **Aliftzy Admin** is the standalone administrative dashboard for **Aliftzy Store**, a Firebase-backed digital subscription storefront. It is built as a completely separate repository that reads and writes to the **exact same Firebase project** as the Store — no intermediary API, no data duplication, no separate backend.
 
-Every change made in Aliftzy Admin is reflected in Aliftzy Store the moment the Store re-fetches data. The two codebases never touch: this repository does not alter a single line, collection, field, or security rule belonging to the Store.
+Every Firestore-backed change made in Aliftzy Admin is reflected in Aliftzy Store the moment the Store re-fetches data. The Music module is intentionally independent and operates entirely from local files.
 
 Design principles behind this project:
 
@@ -218,8 +218,7 @@ Technologies
 <td align="center" width="120">
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br><sub><strong>HTML5</strong></sub>
 </td>
-<td align="center" width="120">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="40"><br><sub><strong>CSS3</strong></sub>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="40"><br><sub><strong>CSS3</strong></sub>
 </td>
 <td align="center" width="120">
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br><sub><strong>JavaScript</strong></sub>
@@ -486,7 +485,7 @@ Builds and maintains both the customer-facing storefront and this administrative
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="22" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22" title="Firestore">
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="22" title="HTML5">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="22" title="CSS3">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
 <img src="https://cdn.simpleicons.org/git/F05032" width="22" title="Git">
 
 </td>
@@ -506,7 +505,7 @@ Project Information
 <tr><td><strong>Project</strong></td><td>Aliftzy Admin</td></tr>
 <tr><td><strong>Companion Project</strong></td><td>Aliftzy Store</td></tr>
 <tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
-<tr><td><strong>Architecture</strong></td><td>Static site — vanilla JavaScript ES Modules + Firebase Web SDK v10 (CDN)</td></tr>
+<tr><td><strong>Architecture</strong></td><td>Static site — vanilla JavaScript ES Modules + Firebase Web SDK (CDN) with a local file-based music library.</td></tr>
 <tr><td><strong>Build Tooling</strong></td><td>None at runtime — one offline Node.js script generates the music manifest</td></tr>
 <tr><td><strong>Developer</strong></td><td>Tuan Aliff</td></tr>
 </table>
@@ -539,10 +538,11 @@ No portion of this repository — code, design system, or assets — may be copi
 <br><br>
 
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="18">&nbsp;
-<sub>Powered by Firebase, Firestore &amp; a local music library</sub>
+<sub>Powered by Firebase Auth, Firestore & HTML5 Audio</sub>
 
 <br><br>
 
 <sub>© 2026 Aliftzy. All rights reserved.</sub>
 
 </div>
+
