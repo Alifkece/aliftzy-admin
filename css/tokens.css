@@ -1,0 +1,75 @@
+/* ==========================================================================
+   ALIFTZY ADMIN — DESIGN TOKENS
+   Concept: "Signal Room" — a dark control console for a subscription store.
+   Deep charcoal-navy base, indigo/amber duotone signal accents, glass panels.
+   ========================================================================== */
+
+:root {
+  /* ---- Core surface ---- */
+  --bg: #090b10;
+  --bg-mesh-1: #201347;
+  --bg-mesh-2: #0c2a3a;
+  --bg-mesh-3: #2a1020;
+
+  --panel: rgba(255, 255, 255, 0.038);
+  --panel-solid: #12141c;
+  --panel-2: rgba(255, 255, 255, 0.055);
+  --panel-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-soft: rgba(255, 255, 255, 0.055);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* ---- Signal accents ---- */
+  --signal: #7c6cff;          /* indigo — primary action / brand */
+  --signal-2: #5645e0;
+  --signal-soft: rgba(124, 108, 255, 0.14);
+  --amber: #ffb020;           /* pending / warning */
+  --amber-soft: rgba(255, 176, 32, 0.14);
+  --emerald: #21d07a;         /* success / paid */
+  --emerald-soft: rgba(33, 208, 122, 0.14);
+  --rose: #fb4570;            /* danger / destructive */
+  --rose-soft: rgba(251, 69, 112, 0.14);
+  --cyan: #35c7e8;            /* info */
+  --cyan-soft: rgba(53, 199, 232, 0.14);
+
+  /* ---- Text ---- */
+  --text: #f3f4f8;
+  --text-2: #a8adba;
+  --text-3: #6b7180;
+  --text-inverse: #0a0b10;
+
+  /* ---- Type ---- */
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* ---- Radii ---- */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* ---- Shadow ---- */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.38);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-glow-signal: 0 0 0 1px rgba(124,108,255,0.35), 0 8px 28px rgba(124,108,255,0.18);
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
+
+  /* ---- Layout ---- */
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 78px;
+  --topbar-h: 68px;
+}
+
+::selection {
+  background: var(--signal);
+  color: #fff;
+}
