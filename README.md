@@ -216,18 +216,28 @@ Technologies
 <table>
 <tr>
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br><sub><strong>HTML5</strong></sub>
+<img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br>
+<sub><strong>HTML5</strong></sub>
 </td>
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="40"><br><sub><strong>CSS3</strong></sub>
-</td>
+
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br><sub><strong>JavaScript</strong></sub>
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="40"><br>
+<sub><strong>CSS3</strong></sub>
 </td>
+
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="40"><br><sub><strong>Firebase Auth</strong></sub>
+<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br>
+<sub><strong>JavaScript</strong></sub>
 </td>
+
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="40"><br><sub><strong>Firestore</strong></sub>
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="40"><br>
+<sub><strong>Firebase Auth</strong></sub>
+</td>
+
+<td align="center" width="120">
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="40"><br>
+<sub><strong>Firestore</strong></sub>
 </td>
 </tr>
 <tr>
@@ -545,4 +555,3 @@ No portion of this repository — code, design system, or assets — may be copi
 <sub>© 2026 Aliftzy. All rights reserved.</sub>
 
 </div>
-
