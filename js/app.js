@@ -11,6 +11,7 @@ import * as productsPage from "./pages/products.js";
 import * as stockPage from "./pages/stock.js";
 import * as ordersPage from "./pages/orders.js";
 import * as songsPage from "./pages/songs.js";
+import * as mediaPage from "./pages/media.js";
 import * as announcementsPage from "./pages/announcements.js";
 import * as settingsPage from "./pages/settings.js";
 import * as profilePage from "./pages/profile.js";
@@ -19,7 +20,8 @@ registerRoute("dashboard", { title: "Dashboard", subtitle: "aliftzy-store · Fir
 registerRoute("products", { title: "Produk", subtitle: "Collection: products", render: productsPage.render });
 registerRoute("stock", { title: "Stock", subtitle: "Collection: stock", render: stockPage.render });
 registerRoute("orders", { title: "Orders", subtitle: "Collection: orders", render: ordersPage.render });
-registerRoute("songs", { title: "Songs", subtitle: "Collection: songs", render: songsPage.render });
+registerRoute("songs", { title: "Music", subtitle: "Collection: songs", render: songsPage.render });
+registerRoute("media", { title: "Media", subtitle: "Doc: settings/mediaLibrary", render: mediaPage.render });
 registerRoute("announcements", { title: "Announcements", subtitle: "Collection: announcements", render: announcementsPage.render });
 registerRoute("settings", { title: "Settings", subtitle: "Collection: settings/store", render: settingsPage.render });
 registerRoute("profile", { title: "Profile", subtitle: "Akun Admin", render: profilePage.render });
@@ -51,6 +53,7 @@ watchAuth(({ user, isAdmin }) => {
           navigate("products");
         }
       });
+      initKeyboardShortcuts();
     }
   } else {
     shell.classList.add("hidden");
@@ -60,7 +63,40 @@ watchAuth(({ user, isAdmin }) => {
   loader.classList.add("hidden");
 });
 
-// ===== LOGIN FORM =====
+// ===== KEYBOARD SHORTCUTS =====
+// Ctrl/Cmd+S = save (active modal), Ctrl/Cmd+F = focus search, Ctrl/Cmd+N = new
+// item on the current page. ESC-to-close-modal is already handled by modal.js.
+function initKeyboardShortcuts() {
+  document.addEventListener("keydown", (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (!mod) return;
+
+    if (e.key.toLowerCase() === "s") {
+      const saveBtn = document.querySelector('.modal-overlay.open [data-hotkey="save"]');
+      if (saveBtn) {
+        e.preventDefault();
+        saveBtn.click();
+      }
+      return;
+    }
+    if (e.key.toLowerCase() === "f") {
+      const search = qs("#global-search");
+      if (search) {
+        e.preventDefault();
+        search.focus();
+        search.select();
+      }
+      return;
+    }
+    if (e.key.toLowerCase() === "n") {
+      const newBtn = document.querySelector('#page-content [data-hotkey="new"]');
+      if (newBtn) {
+        e.preventDefault();
+        newBtn.click();
+      }
+    }
+  });
+}
 const loginForm = qs("#login-form");
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
