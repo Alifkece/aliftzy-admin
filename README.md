@@ -7,7 +7,7 @@
 # Aliftzy Admin
 
 <strong>The control-plane dashboard for Aliftzy Store</strong><br>
-A zero-build administrative dashboard built with vanilla JavaScript ES Modules, powered by Firebase and a fully local file-based music library.
+A zero-build, Firebase-native admin panel written in vanilla JavaScript ES Modules.
 
 <br>
 
@@ -19,7 +19,7 @@ A zero-build administrative dashboard built with vanilla JavaScript ES Modules, 
 <br><br>
 
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="28" title="HTML5">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="28" title="CSS3">
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="28" title="JavaScript">
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="28" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="28" title="Firestore">
@@ -34,7 +34,7 @@ A zero-build administrative dashboard built with vanilla JavaScript ES Modules, 
 
 <div align="center">
 
-**[Overview](#overview)** · **[Features](#features)** · **[Screenshots](#screenshots)** · **[Technologies](#technologies)** · **[Project Structure](#project-structure)** · **[Database](#database)** · **[Local Music Library](#local-music-library)** · **[Security](#security)** · **[Deployment](#deployment)** · **[Developer](#developer)** · **[License](#license)**
+**[Overview](#overview)** · **[Features](#features)** · **[Screenshots](#screenshots)** · **[Technologies](#technologies)** · **[Project Structure](#project-structure)** · **[Database](#database)** · **[Security](#security)** · **[Deployment](#deployment)** · **[Developer](#developer)** · **[License](#license)**
 
 </div>
 
@@ -49,7 +49,7 @@ Overview
 
 **Aliftzy Admin** is the standalone administrative dashboard for **Aliftzy Store**, a Firebase-backed digital subscription storefront. It is built as a completely separate repository that reads and writes to the **exact same Firebase project** as the Store — no intermediary API, no data duplication, no separate backend.
 
-Every Firestore-backed change made in Aliftzy Admin is reflected in Aliftzy Store the moment the Store re-fetches data. The Music module is intentionally independent and operates entirely from local files.
+Every change made in Aliftzy Admin is reflected in Aliftzy Store the moment the Store re-fetches data. The two codebases never touch: this repository does not alter a single line, collection, field, or security rule belonging to the Store.
 
 Design principles behind this project:
 
@@ -119,7 +119,7 @@ Features
 </tr>
 <tr>
 <td><strong>Music</strong></td>
-<td>A fully <strong>local</strong> music library — scans <code>/music</code> for <code>.mp3</code> files via a generated manifest, no database or external URL involved. Search, drag-to-reorder, cover-art detection, and a sticky mini player with play/pause, next/previous, shuffle, repeat, volume, and an animated equalizer.</td>
+<td>A realtime playlist manager backed by Firestore (<code>songs</code> collection) — pick audio/cover files straight from the Media Manager or paste a URL, search, drag-to-reorder (synced instantly across every device), and a sticky mini player with play/pause, next/previous, shuffle, repeat, volume, and an animated equalizer.</td>
 <td align="center"><img src="https://img.shields.io/badge/stable-2ECC71?style=flat-square" alt="Stable"></td>
 </tr>
 <tr>
@@ -216,28 +216,19 @@ Technologies
 <table>
 <tr>
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br>
-<sub><strong>HTML5</strong></sub>
+<img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br><sub><strong>HTML5</strong></sub>
 </td>
-
 <td align="center" width="120">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="40"><br>
-<sub><strong>CSS3</strong></sub>
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="40"><br><sub><strong>CSS3</strong></sub>
 </td>
-
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br>
-<sub><strong>JavaScript</strong></sub>
+<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br><sub><strong>JavaScript</strong></sub>
 </td>
-
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="40"><br>
-<sub><strong>Firebase Auth</strong></sub>
+<img src="https://cdn.simpleicons.org/firebase/FFCA28" width="40"><br><sub><strong>Firebase Auth</strong></sub>
 </td>
-
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="40"><br>
-<sub><strong>Firestore</strong></sub>
+<img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="40"><br><sub><strong>Firestore</strong></sub>
 </td>
 </tr>
 <tr>
@@ -254,14 +245,14 @@ Technologies
 <img src="https://cdn.simpleicons.org/netlify/00C7B7" width="40"><br><sub><strong>Netlify</strong></sub>
 </td>
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" width="40"><br><sub><strong>Node.js</strong> <sub>(manifest script)</sub></sub>
+<img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="40"><br><sub><strong>Web SDK v10</strong></sub>
 </td>
 </tr>
 </table>
 
 </div>
 
-> This project intentionally ships **without a bundler**. Firebase is loaded straight from the `gstatic.com` CDN, matching the exact technical pattern used by Aliftzy Store. The only place Node.js is used is a small offline script that generates the local music manifest — it never runs in the browser.
+> This project intentionally ships **without a bundler**. Firebase is loaded straight from the `gstatic.com` CDN, matching the exact technical pattern used by Aliftzy Store, so both codebases can be deployed to any static host with zero configuration.
 
 <br>
 
@@ -277,14 +268,6 @@ Aliftzy-Admin/
 ├── index.html                  # Login screen + app shell + router outlet
 ├── firestore.rules             # Reference copy of production rules (never deployed from here)
 ├── package.json
-│
-├── music/                      # Local music library (no database, no external URLs)
-│   ├── manifest.json            # Generated — see scripts/generate-music-manifest.mjs
-│   ├── README.md                 # Filename conventions & cover-art rules
-│   └── *.mp3, *.jpg/.png/.webp   # Your audio files + optional matching cover art
-│
-├── scripts/
-│   └── generate-music-manifest.mjs   # Dev-time only — scans /music, writes manifest.json
 │
 ├── css/
 │   ├── tokens.css              # Design tokens — color, type scale, radius, motion
@@ -303,18 +286,17 @@ Aliftzy-Admin/
     │   ├── format.js             # Currency, date, string, byte-size, and ID helpers
     │   └── dom.js                 # DOM query & file-reading helpers
     │
-    ├── services/                # One file = one Firestore collection (or document) —
-    │   │                         # except musicLibraryService.js, which touches no database
+    ├── services/                # One file = one Firestore collection (or document)
     │   ├── authService.js
     │   ├── productsService.js
     │   ├── stockService.js
     │   ├── ordersService.js
+    │   ├── musicService.js        # songs collection — realtime, ordered by `order` asc
     │   ├── announcementsService.js
     │   ├── settingsService.js
     │   ├── statsService.js
     │   ├── mediaService.js        # Media library metadata → settings/mediaLibrary
-    │   ├── uploadService.js       # Browser-side transport for the media upload API
-    │   └── musicLibraryService.js # Reads music/manifest.json — no Firestore, no network API
+    │   └── uploadService.js       # Browser-side transport for the media upload API
     │
     ├── components/               # Reusable UI — no markup duplication across pages
     │   ├── sidebar.js
@@ -330,7 +312,7 @@ Aliftzy-Admin/
         ├── products.js
         ├── stock.js
         ├── orders.js
-        ├── songs.js                # "Music" route — local library player
+        ├── songs.js                # "Music" route — Firestore-backed playlist manager
         ├── media.js
         ├── announcements.js
         ├── settings.js
@@ -346,7 +328,7 @@ Aliftzy-Admin/
 Database
 </h2>
 
-Aliftzy Admin and Aliftzy Store share **one Firestore database** inside the same Firebase project. There is no API layer between them — both read and write Firestore directly, so changes propagate as soon as the other side re-fetches. **Music is the one module that intentionally has no row here** — see [Local Music Library](#local-music-library) below.
+Aliftzy Admin and Aliftzy Store share **one Firestore database** inside the same Firebase project. There is no API layer between them — both read and write Firestore directly, so changes propagate as soon as the other side re-fetches.
 
 <table>
 <thead>
@@ -359,6 +341,7 @@ Aliftzy Admin and Aliftzy Store share **one Firestore database** inside the same
 </thead>
 <tbody>
 <tr><td><code>products</code></td><td><code>loadProducts()</code></td><td><code>name, category, price, desc, badge, img, link, packages[]</code></td><td><code>productsService.js</code></td></tr>
+<tr><td><code>songs</code></td><td><code>loadSongs()</code></td><td><code>title, artist, url</code></td><td><code>musicService.js</code></td></tr>
 <tr><td><code>stock</code></td><td><code>loadStockPublic()</code></td><td><code>productId, sold</code></td><td><code>stockService.js</code></td></tr>
 <tr><td><code>announcements</code></td><td><code>loadAnnouncements()</code></td><td><code>title, msg, type, active, createdAt</code> (epoch ms)</td><td><code>announcementsService.js</code></td></tr>
 <tr><td><code>settings/store</code></td><td><code>loadStoreProfile()</code></td><td><code>avatarUrl</code></td><td><code>settingsService.js</code></td></tr>
@@ -369,39 +352,9 @@ Aliftzy Admin and Aliftzy Store share **one Firestore database** inside the same
 
 <blockquote>
 
-**No new collections. No new subcollections.** Every additive field (e.g. `stock.label`) is written alongside the fields the Store already reads — the Store ignores unknown fields safely, so backward compatibility is guaranteed by design, not by convention.
+**No new collections. No new subcollections.** The `songs` documents Admin writes now carry a richer shape — `title, artist, audioUrl, url, coverUrl, duration, order, createdAt, updatedAt` — but `url` is always kept mirroring `audioUrl`, so the Store's existing `loadSongs()` (which only reads `title, artist, url`) keeps working completely unmodified. Every other additive field (e.g. `stock.label`) follows the same rule: the Store ignores fields it doesn't know about, so backward compatibility is guaranteed by design, not by convention.
 
 </blockquote>
-
-<br>
-
----
-
-<h2 id="local-music-library">
-<img src="https://cdn.simpleicons.org/files/4A90D9" width="24" align="center">&nbsp;
-Local Music Library
-</h2>
-
-Music is deliberately **not** a Firestore collection. It is a plain folder of `.mp3` files, scanned ahead of time into a manifest — no database, no upload API, no external URL of any kind.
-
-<table>
-<tr>
-<td width="28"><img src="https://cdn.simpleicons.org/files/4A90D9" width="20"></td>
-<td><strong>Source of truth</strong><br>The <code>/music</code> folder itself. Files are served as static assets, exactly like any image in this repository.</td>
-</tr>
-<tr>
-<td width="28"><img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" width="20"></td>
-<td><strong>Scanning</strong><br>Browsers can't list a folder's contents on a static host, so <code>scripts/generate-music-manifest.mjs</code> does it ahead of deployment: <code>npm run generate:music</code> writes <code>music/manifest.json</code> from whatever <code>.mp3</code> files are present.</td>
-</tr>
-<tr>
-<td width="28"><img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="20"></td>
-<td><strong>Playback</strong><br>The Music page fetches <code>manifest.json</code> and streams each track directly from <code>/music/&lt;file&gt;.mp3</code> via a standard <code>&lt;audio&gt;</code> element — search, drag-to-reorder, shuffle, repeat, volume, progress, and an animated equalizer, supporting well beyond 10 tracks.</td>
-</tr>
-<tr>
-<td width="28"><img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="20"></td>
-<td><strong>Personalization</strong><br>Custom track order and display-name overrides are saved to <code>localStorage</code>, scoped to that browser only — nothing is written back to disk or to any server.</td>
-</tr>
-</table>
 
 <br>
 
@@ -434,8 +387,8 @@ Security
 <td><strong>Ownership Validation</strong><br>Order documents are gated with <code>isOwner(resource.data.userId)</code> — a customer can only ever read their own orders; only an admin can update or delete them.</td>
 </tr>
 <tr>
-<td width="28"><img src="https://cdn.simpleicons.org/files/4A90D9" width="22"></td>
-<td><strong>Zero Attack Surface for Music</strong><br>No database rule, no upload endpoint, and no external host to secure for the Music module — it's static files served like any other asset.</td>
+<td width="28"><img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22"></td>
+<td><strong>Realtime Ownership</strong><br>Song documents live in the same <code>isAdmin()</code>-gated <code>songs</code> collection the Store already reads publicly — writes (add/edit/delete/reorder) still require an authenticated admin.</td>
 </tr>
 </table>
 
@@ -456,11 +409,10 @@ Because there is no build step, Aliftzy Admin can be deployed to **any static ho
 </thead>
 <tbody>
 <tr><td>1&nbsp;·&nbsp;Clone</td><td><code>git clone &lt;repository-url&gt;</code></td></tr>
-<tr><td>2&nbsp;·&nbsp;Add music (optional)</td><td>Drop <code>.mp3</code> files into <code>/music</code>, then run <code>npm run generate:music</code></td></tr>
-<tr><td>3&nbsp;·&nbsp;Run locally</td><td><code>npx serve .</code> &nbsp;or&nbsp; <code>python3 -m http.server</code></td></tr>
-<tr><td>4&nbsp;·&nbsp;Deploy</td><td>Upload the repository as-is to Vercel, Netlify, Firebase Hosting, or GitHub Pages</td></tr>
-<tr><td>5&nbsp;·&nbsp;Authorize domain</td><td>Add the deployed domain under <em>Firebase Console → Authentication → Settings → Authorized domains</em></td></tr>
-<tr><td>6&nbsp;·&nbsp;Sign in</td><td>Log in with the Firebase account whose email matches <code>isAdmin()</code> in the production rules</td></tr>
+<tr><td>2&nbsp;·&nbsp;Run locally</td><td><code>npx serve .</code> &nbsp;or&nbsp; <code>python3 -m http.server</code></td></tr>
+<tr><td>3&nbsp;·&nbsp;Deploy</td><td>Upload the repository as-is to Vercel, Netlify, Firebase Hosting, or GitHub Pages</td></tr>
+<tr><td>4&nbsp;·&nbsp;Authorize domain</td><td>Add the deployed domain under <em>Firebase Console → Authentication → Settings → Authorized domains</em></td></tr>
+<tr><td>5&nbsp;·&nbsp;Sign in</td><td>Log in with the Firebase account whose email matches <code>isAdmin()</code> in the production rules</td></tr>
 </tbody>
 </table>
 
@@ -495,7 +447,7 @@ Builds and maintains both the customer-facing storefront and this administrative
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="22" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22" title="Firestore">
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="22" title="HTML5">
-<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
+<img src="https://cdn.simpleicons.org/css3/1572B6" width="22" title="CSS3">
 <img src="https://cdn.simpleicons.org/git/F05032" width="22" title="Git">
 
 </td>
@@ -515,8 +467,8 @@ Project Information
 <tr><td><strong>Project</strong></td><td>Aliftzy Admin</td></tr>
 <tr><td><strong>Companion Project</strong></td><td>Aliftzy Store</td></tr>
 <tr><td><strong>Version</strong></td><td>1.0.0</td></tr>
-<tr><td><strong>Architecture</strong></td><td>Static site — vanilla JavaScript ES Modules + Firebase Web SDK (CDN) with a local file-based music library.</td></tr>
-<tr><td><strong>Build Tooling</strong></td><td>None at runtime — one offline Node.js script generates the music manifest</td></tr>
+<tr><td><strong>Architecture</strong></td><td>Static site — vanilla JavaScript ES Modules + Firebase Web SDK v10 (CDN)</td></tr>
+<tr><td><strong>Build Tooling</strong></td><td>None — no bundler, no framework</td></tr>
 <tr><td><strong>Developer</strong></td><td>Tuan Aliff</td></tr>
 </table>
 
@@ -548,7 +500,7 @@ No portion of this repository — code, design system, or assets — may be copi
 <br><br>
 
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="18">&nbsp;
-<sub>Powered by Firebase Auth, Firestore & HTML5 Audio</sub>
+<sub>Powered by Firebase &amp; Firestore</sub>
 
 <br><br>
 
