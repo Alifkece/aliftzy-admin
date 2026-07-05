@@ -5,6 +5,7 @@ import { toastError } from "./components/toast.js";
 import { initSidebar } from "./components/sidebar.js";
 import { renderTopbarUser, onRefresh, onGlobalSearch } from "./components/topbar.js";
 import { registerRoute, startRouter, navigate, getCurrentRoute } from "./router.js";
+import { initPlayerEngine, getAudioElement } from "./services/playerEngine.js";
 
 import * as dashboardPage from "./pages/dashboard.js";
 import * as productsPage from "./pages/products.js";
@@ -40,6 +41,7 @@ watchAuth(({ user, isAdmin }) => {
     if (!appStarted) {
       appStarted = true;
       initSidebar();
+      initPlayerEngine();
       startRouter();
       onRefresh(async () => {
         const route = getCurrentRoute();
@@ -59,6 +61,7 @@ watchAuth(({ user, isAdmin }) => {
     shell.classList.add("hidden");
     authScreen.classList.remove("hidden");
     appStarted = false;
+    getAudioElement()?.pause();
   }
   loader.classList.add("hidden");
 });
