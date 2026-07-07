@@ -19,7 +19,7 @@ A zero-build, Firebase-native admin panel written in vanilla JavaScript ES Modul
 <br><br>
 
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="28" title="HTML5">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="28" title="CSS3">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="28" title="JavaScript">
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="28" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="28" title="Firestore">
@@ -219,7 +219,8 @@ Technologies
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="40"><br><sub><strong>HTML5</strong></sub>
 </td>
 <td align="center" width="120">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="40"><br><sub><strong>CSS3</strong></sub>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="40"><br>
+  <sub><strong>CSS3</strong></sub>
 </td>
 <td align="center" width="120">
 <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="40"><br><sub><strong>JavaScript</strong></sub>
@@ -447,7 +448,7 @@ Builds and maintains both the customer-facing storefront and this administrative
 <img src="https://cdn.simpleicons.org/firebase/FFCA28" width="22" title="Firebase">
 <img src="https://cdn.simpleicons.org/googlecloud/4285F4" width="22" title="Firestore">
 <img src="https://cdn.simpleicons.org/html5/E34F26" width="22" title="HTML5">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="22" title="CSS3">
+<img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="28" title="CSS3">
 <img src="https://cdn.simpleicons.org/git/F05032" width="22" title="Git">
 
 </td>
