@@ -2,164 +2,1087 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Aliftzy Admin — Dashboard</title>
-<meta name="description" content="Dashboard Admin untuk mengelola produk, stok, order, lagu, dan pengumuman Aliftzy Store.">
-<meta name="robots" content="noindex, nofollow">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><rect width=%2224%22 height=%2224%22 rx=%226%22 fill=%22%237c6cff%22/></svg>">
-<link rel="stylesheet" href="css/tokens.css">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/animations.css">
-<link rel="stylesheet" href="css/pages.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ALIFTZY STORE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="bg-mesh"><span></span></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="bg-particles" id="bg-particles"></div>
 
-<!-- ===== INITIAL LOADER ===== -->
-<div id="page-loader" class="page-loader">
-  <div class="spinner" style="width:26px;height:26px;border-width:3px;"></div>
-</div>
+<div class="notif" id="notif"><span id="notif-text"></span></div>
 
-<!-- ===== AUTH SCREEN ===== -->
-<div id="auth-screen" class="auth-screen hidden">
-  <div class="auth-card">
-    <div class="auth-brand">
-      <div class="brand-mark">A</div>
-      <h1>Aliftzy Admin</h1>
-      <p>Masuk untuk mengelola Aliftzy Store</p>
-    </div>
-
-    <form id="login-form" autocomplete="on">
-      <div class="field">
-        <label for="login-email">Email</label>
-        <input type="email" id="login-email" placeholder="admin@aliftzy.store" required autocomplete="username">
-      </div>
-      <div class="field">
-        <label for="login-password">Kata Sandi</label>
-        <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
-      </div>
-      <div id="login-error" class="hidden" style="font-size:12px;color:var(--rose);background:var(--rose-soft);border:1px solid rgba(251,69,112,0.25);padding:10px 12px;border-radius:var(--r-sm);margin-bottom:14px;"></div>
-      <button type="submit" id="btn-login" class="btn btn-primary btn-block">
-        <span>Masuk ke Dashboard</span>
-      </button>
-    </form>
-
-    <div class="divider"></div>
-    <p style="font-size:11.5px;color:var(--text-3);text-align:center;line-height:1.6;">
-      Akses dashboard ini terbatas untuk akun Admin yang terdaftar.<br>Dilindungi oleh Firebase Authentication &amp; Firestore Security Rules.
-    </p>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="nav-logo" href="#" onclick="showPage('home')">ALIFTZY STORE</a>
+  <ul class="nav-links">
+    <li><a href="#products">Produk</a></li>
+    <li><a href="#reseller">Reseller</a></li>
+  </ul>
+  <div class="nav-spacer"></div>
+  <div class="nav-auth" id="nav-auth" style="display:none;"></div>
+  <div class="nav-bell hidden" id="nav-bell" onclick="openAnnPopup()" title="Pemberitahuan">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <div class="nav-bell-dot" id="nav-bell-dot"></div>
   </div>
-</div>
-
-<!-- ===== APP SHELL ===== -->
-<div id="app-shell" class="hidden">
-  <div class="sidebar-backdrop" data-close-mobile-sidebar></div>
-
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-mark">A</div>
-      <div class="brand-text">
-        <strong>Aliftzy Admin</strong>
-        <span>Control Panel</span>
+  <div class="nav-user hidden" id="nav-user">
+    <div class="avatar-sm" id="nav-avatar" onclick="toggleUserMenu()">A</div>
+    <div id="user-menu" style="position:relative; display:none;">
+      <div style="position:absolute;top:38px;right:0;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:150px;z-index:200;">
+        <button class="sidebar-item" onclick="handleLogout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
+        </button>
       </div>
     </div>
+  </div>
+</nav>
 
-    <div class="sidebar-section-label">Menu</div>
-    <nav id="sidebar-nav">
-      <a class="nav-item" data-route="dashboard" href="#/dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-        <span class="nav-label">Dashboard</span>
-      </a>
-      <a class="nav-item" data-route="products" href="#/products">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 7.3 12 3 3.5 7.3 12 11.6z"/><path d="M3.5 7.3v9.4L12 21l8.5-4.3V7.3"/><path d="M12 11.6V21"/></svg>
-        <span class="nav-label">Produk</span>
-      </a>
-      <a class="nav-item" data-route="stock" href="#/stock">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-        <span class="nav-label">Stock</span>
-      </a>
-      <a class="nav-item" data-route="orders" href="#/orders">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span class="nav-label">Orders</span>
-        <span class="nav-badge hidden" id="nav-badge-orders">0</span>
-      </a>
-      <a class="nav-item" data-route="songs" href="#/songs">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        <span class="nav-label">Music</span>
-        <span class="nav-eq hidden" id="nav-eq-music" aria-hidden="true">
-          <span class="nav-eq-bar"></span><span class="nav-eq-bar"></span><span class="nav-eq-bar"></span>
-        </span>
-      </a>
-      <a class="nav-item" data-route="media" href="#/media">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span class="nav-label">Media</span>
-      </a>
-      <a class="nav-item" data-route="announcements" href="#/announcements">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M18.5 5.5a8 8 0 0 1 0 13"/></svg>
-        <span class="nav-label">Announcements</span>
-      </a>
+<!-- MAIN -->
+<div class="main">
 
-      <div class="sidebar-section-label">Sistem</div>
-      <a class="nav-item" data-route="settings" href="#/settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span class="nav-label">Settings</span>
-      </a>
-      <a class="nav-item" data-route="profile" href="#/profile">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span class="nav-label">Profile</span>
-      </a>
-    </nav>
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home">
 
-    <div class="sidebar-spacer"></div>
-    <button type="button" class="sidebar-collapse-btn" id="btn-collapse-sidebar">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      <span class="nav-label">Ciutkan</span>
-    </button>
-  </aside>
-
-  <div class="main-col">
-    <header class="topbar">
-      <button type="button" class="topbar-mobile-toggle" id="btn-mobile-sidebar" aria-label="Buka menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <!-- HOME DASHBOARD NAV TABS -->
+  <div class="home-dashboard-nav" id="home-dashboard-nav">
+    <div class="home-nav-tabs">
+      <button class="home-nav-tab active" id="hntab-0" onclick="switchHomeTab(0)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Produk
       </button>
-      <div class="topbar-title">
-        <h1 id="topbar-title">Dashboard</h1>
-        <small id="topbar-subtitle">aliftzy-store · Firestore live</small>
-      </div>
+      <button class="home-nav-tab" id="hntab-1" onclick="switchHomeTab(1)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        Pesanan Saya
+      </button>
+      <button class="home-nav-tab" id="hntab-2" onclick="switchHomeTab(2)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Reseller
+      </button>
+      <button class="home-nav-tab" id="hntab-3" onclick="switchHomeTab(3)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+  </div>
 
-      <div class="topbar-spacer"></div>
+  <!-- HOME SECTIONS SLIDER WRAPPER -->
+  <div class="home-sections-wrap" id="home-sections-wrap">
+  <div class="home-sections-slider" id="home-sections-slider">
 
-      <div class="topbar-search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="global-search" placeholder="Cari produk, order, lagu...">
-      </div>
+  <!-- PANEL 0: STORE (produk + hero) -->
+  <div class="home-section-panel" id="home-panel-0">
 
-      <div class="topbar-actions">
-        <button type="button" class="icon-btn" id="btn-refresh" title="Muat ulang data" aria-label="Muat ulang">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-        </button>
-        <div class="topbar-profile" id="topbar-profile-btn">
-          <div class="avatar-chip" id="topbar-avatar">A</div>
-          <div class="topbar-profile-meta">
-            <strong id="topbar-name">Admin</strong>
-            <span id="topbar-email">-</span>
+  <!-- HERO BANNER -->
+  <div class="hero-banner">
+    <div class="banner-ratio" id="banner-bg">
+      <div class="banner-grid"></div>
+      <div class="banner-glow-left"></div>
+      <div class="banner-glow-right"></div>
+      <div class="banner-content">
+        <div class="banner-inner">
+          
+          <div class="store-avatar" id="-wrap">
+            
+            <video autoplay loop muted playsinline style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1;">
+              <source src="https://smail.my.id/cloud/mOXyBUbl1" type="video/mp4">
+            </video>
+
+            <div class="avatar-placeholder" id="avatar-placeholder" style="display:none; z-index:0;">
+              <svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <img id="avatar-img" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+          </div>
+
+
+          <div class="store-info reveal-left">
+            <div class="store-name">WELCOME MY STORE</div>
+            <div class="store-tagline">Premium App Subscription — Terpercaya dan Bergaransi</div>
+            <div class="store-badges">
+              <span class="badge badge-blue">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Bergaransi
+              </span>
+              <span class="badge badge-purple">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Terpercaya
+              </span>
+              <span class="badge badge-gold">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Open Reseller
+              </span>
+            </div>
+            <div class="social-btns">
+              <!-- GANTI LINK WA DAN IG DI SINI -->
+              <a class="social-btn social-btn-wa" href="https://whatsapp.com/channel/0029VbAbqrkBvvseV1Cpk73p" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.555 4.122 1.524 5.855L0 24l6.335-1.508A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.891 0-3.659-.498-5.191-1.371l-.372-.22-3.861.919.976-3.768-.242-.388A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                Saluran WA
+              </a>
+              <a class="social-btn social-btn-ig" href="https://instagram.com/stwrbry20" target="_blank" rel="noopener">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                Instagram
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </header>
+    </div>
+  </div>
 
-    <main class="page-content" id="page-content">
-      <!-- Halaman dirender di sini oleh router.js -->
-    </main>
+  <!-- MUSIC PLAYER -->
+  <div class="music-section">
+    <div class="music-label">MUSIK</div>
+
+    <!-- EQUALIZER — animasi dikontrol JS via class "playing" -->
+    <div class="equalizer" id="equalizer">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+
+    <div class="music-track-info">
+      <div class="music-title" id="music-title">Pilih lagu</div>
+      <div class="music-artist" id="music-artist">—</div>
+    </div>
+
+    <div class="music-controls">
+      <button class="music-btn" onclick="prevTrack()" title="Sebelumnya">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+      <button class="music-btn music-btn-play" id="play-btn" onclick="togglePlay()">
+        <svg id="play-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <svg id="pause-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button class="music-btn" onclick="nextTrack()" title="Berikutnya">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
+      </button>
+    </div>
+
+    <div class="music-progress-wrap">
+      <div class="progress-bar-wrap" onclick="seekAudio(event)" id="progress-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-times">
+        <span id="time-current">0:00</span>
+        <span id="time-total">0:00</span>
+      </div>
+    </div>
+
+    <div class="volume-wrap">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+      </svg>
+      <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.7" oninput="setVolume(this.value)">
+    </div>
+
+    <div class="music-track-select">
+      <button class="track-select-btn" onclick="toggleTrackMenu(event)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Lagu
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+      </button>
+      <div class="track-dropdown" id="track-dropdown"></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- PRODUCTS -->
+  <section class="section" id="products">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-title reveal">Produk Premium</div>
+          <div class="section-subtitle">Berlangganan aplikasi favorit dengan harga terjangkau</div>
+        </div>
+      </div>
+
+      <div class="cat-tabs" id="cat-tabs">
+        <button class="cat-tab active" data-cat="all" onclick="filterProducts('all', this)">Semua</button>
+        <button class="cat-tab" data-cat="streaming" onclick="filterProducts('streaming', this)">Streaming</button>
+        <button class="cat-tab" data-cat="musik" onclick="filterProducts('musik', this)">Musik</button>
+        <button class="cat-tab" data-cat="produktivitas" onclick="filterProducts('produktivitas', this)">Produktivitas</button>
+        <button class="cat-tab" data-cat="kreatif" onclick="filterProducts('kreatif', this)">Kreatif</button>
+        <button class="cat-tab" data-cat="edukasi" onclick="filterProducts('edukasi', this)">Edukasi</button>
+        <button class="cat-tab" data-cat="lainnya" onclick="filterProducts('lainnya', this)">Lainnya</button>
+      </div>
+
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+  </section>
+
+  </div><!-- end home-panel-0 -->
+
+  <!-- PANEL 1: PESANAN SAYA -->
+  <div class="home-section-panel" id="home-panel-1">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-title reveal">Pesanan Saya</div>
+            <div class="section-subtitle">Riwayat pesanan dan akun yang dikirim</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadMyOrders()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-4.36"/></svg>
+            Refresh
+          </button>
+        </div>
+        <div id="my-orders-list">
+          <div class="orders-empty">
+            <div class="orders-empty-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div>Belum ada pesanan</div>
+            <div style="font-size:12px;margin-top:6px;">Pesanan akan muncul setelah pembayaran dikonfirmasi</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- end home-panel-1 -->
+
+  <!-- PANEL 2: RESELLER (pindah dari section lama) -->
+  <div class="home-section-panel" id="home-panel-2">
+
+  <!-- RESELLER / OWNER -->
+  <section class="section" id="reseller" style="background: var(--bg2); border-top: 1px solid var(--border);">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Open Reseller dan Owner</div>
+          <div class="section-subtitle">Bergabung dan mulai penghasilan bersama ALIFTZY STORE</div>
+        </div>
+      </div>
+      <div class="membership-grid">
+
+        <div class="membership-card membership-card-reseller">
+          <div class="membership-glow-reseller"></div>
+          <div class="membership-icon membership-icon-reseller">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="membership-tier membership-tier-reseller">Paket Reseller</div>
+          <div class="membership-title">Reseller</div>
+          <div class="membership-price membership-price-reseller">Rp10.000<small>/ sekali</small></div>
+          <ul class="membership-benefits">
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mendapatkan stok aplikasi premium seperti Canva dan Alight Motion</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mendapatkan bahan lengkap untuk menjual aplikasi premium</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Diajari cara mendapatkan pembeli secara efektif</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Dipromosikan secara aktif selama 24/7</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Selalu dibantu jika ada kendala</li>
+          </ul>
+          <button class="btn btn-primary full-btn" onclick="orderMembership('reseller')">Daftar Reseller</button>
+        </div>
+
+        <div class="membership-card membership-card-owner">
+          <div class="membership-glow-owner"></div>
+          <div class="membership-icon membership-icon-owner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.8">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div class="membership-tier membership-tier-owner">Paket Owner</div>
+          <div class="membership-title">Owner</div>
+          <div class="membership-price membership-price-owner">Rp20.000<small>/ sekali</small></div>
+          <ul class="membership-benefits">
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Bisa membuka paket reseller premium sendiri</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mendapatkan semua bahan dan akses group reseller</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Masuk group reseller aplikasi premium di Telegram dengan role Presiden</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mendapatkan akses semua group LPM</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Mendapatkan akses jaseb dan free admin GB reseller di WhatsApp dan Telegram</li>
+            <li><svg class="benefit-check" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Free partner pribadi Aliftzycrt</li>
+          </ul>
+          <button class="btn btn-gold full-btn" onclick="orderMembership('owner')">Daftar Owner</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  </div><!-- end home-panel-2 -->
+
+  <!-- PANEL 3: SETTINGS -->
+  <div class="home-section-panel" id="home-panel-3">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <div class="section-title reveal">Settings</div>
+            <div class="section-subtitle">Pengaturan akun dan preferensi</div>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:480px;">
+          <div id="settings-user-info" style="padding:20px 20px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;" id="settings-username">—</div>
+            <div style="font-size:12.5px;color:var(--text2);" id="settings-email">—</div>
+          </div>
+          <div style="padding:12px 8px;">
+            <button class="sidebar-item" style="width:100%;" onclick="switchHomeTab(1)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Pesanan Saya
+            </button>
+            <button class="sidebar-item" style="width:100%;" onclick="switchHomeTab(0)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Lihat Produk
+            </button>
+            <button class="sidebar-item" style="width:100%;color:var(--danger);" onclick="handleLogout()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Keluar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div><!-- end home-panel-3 -->
+
+  </div><!-- end home-sections-slider -->
+  </div><!-- end home-sections-wrap -->
+
+  <footer class="footer">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.08em;margin-bottom:6px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">ALIFTZY STORE</div>
+    <div>Premium App Subscription — Terpercaya dan Bergaransi</div>
+    <div style="margin-top:4px;font-size:11px;">Semua hak dilindungi &copy; 2025 ALIFTZY STORE</div>
+  </footer>
+
+</div><!-- end page-home -->
+
+
+<!-- ===== AUTH PAGE ===== -->
+<div id="page-auth" style="min-height:100vh;align-items:center;justify-content:center;padding:80px 16px 40px;">
+  <div class="auth-card">
+    <div class="auth-logo">ALIFTZY STORE</div>
+    <div class="auth-subtitle">Akun diperlukan untuk melakukan pemesanan</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Masuk</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Daftar</button>
+    </div>
+
+    <div id="auth-login">
+      <div class="field-group">
+        <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="nama@email.com" autocomplete="email"></div>
+        <div class="field"><label>Kata Sandi</label><input type="password" id="login-password" placeholder="Masukkan kata sandi" autocomplete="current-password"></div>
+      </div>
+      <div class="auth-error" id="login-error"></div>
+      <button class="btn btn-primary full-btn" id="btn-login" onclick="handleLogin()">
+        <span id="login-btn-text">Masuk</span>
+      </button>
+    </div>
+
+    <div id="auth-register" style="display:none;">
+      <div class="field-group">
+        <div class="field"><label>Nama</label><input type="text" id="reg-name" placeholder="Nama lengkap" autocomplete="name"></div>
+        <div class="field"><label>Email</label><input type="email" id="reg-email" placeholder="nama@email.com" autocomplete="email"></div>
+        <div class="field"><label>Kata Sandi</label><input type="password" id="reg-password" placeholder="Minimal 6 karakter" autocomplete="new-password"></div>
+      </div>
+      <div class="auth-error" id="reg-error"></div>
+      <div class="auth-success" id="reg-success"></div>
+      <button class="btn btn-primary full-btn" id="btn-register" onclick="handleRegister()">
+        <span id="reg-btn-text">Buat Akun</span>
+      </button>
+    </div>
+
+    <div class="auth-back" id="auth-back-home" style="display:none;">
+      <a href="#" onclick="showPage('home')">Kembali ke Toko</a>
+    </div>
   </div>
 </div>
 
-<div id="modal-root"></div>
-<div id="toast-stack"></div>
 
+
+</div><!-- end main -->
+
+
+<!-- MODALS -->
+
+<div class="modal-overlay" id="modal-order">
+  <div class="modal" style="max-width:400px;">
+    <button class="modal-close" onclick="closeModal('modal-order')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" id="modal-order-title">Pesan Produk</div>
+    <div id="modal-order-body" style="font-size:13.5px;color:var(--text2);line-height:1.7;margin-bottom:20px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-order')">Tutup</button>
+      <button class="btn btn-danger" id="btn-order-cancel" style="display:none;" onclick="closeModal('modal-order')">Batalkan Pembelian</button>
+      <button class="btn btn-primary" id="btn-order-go" onclick="goOrder()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Hubungi Sekarang
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Logic aplikasi dipisah ke js/ — lihat js/firebase-config.js dan js/app.js -->
 <script type="module" src="js/app.js"></script>
+
+
+<!-- ===== ANNOUNCEMENT POPUP ===== -->
+<div class="ann-overlay" id="ann-overlay">
+  <div class="ann-popup" id="ann-popup">
+    <div class="ann-popup-header">
+      <div class="ann-icon ann-icon-info" id="ann-main-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7ab0ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="ann-header-text">
+        <div class="ann-badge ann-badge-info" id="ann-main-badge">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Pemberitahuan
+        </div>
+        <div class="ann-popup-title" id="ann-main-title">Selamat Datang!</div>
+        <div class="ann-popup-meta" id="ann-main-meta">ALIFTZY STORE</div>
+      </div>
+      <button class="ann-close-btn" onclick="closeAnnPopup()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ann-divider"></div>
+    <div class="ann-list" id="ann-list"></div>
+    <div class="ann-popup-footer">
+      <button class="btn btn-primary full-btn" onclick="closeAnnPopup()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Mengerti
+      </button>
+      <div class="ann-footer-note">Klik bell di navbar untuk buka kembali</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== CHOOSE YOUR EXPERIENCE OVERLAY (Aliftzy Store) ===== -->
+<style>
+  #cxp-overlay{
+    position:fixed; inset:0; z-index:10050;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 0%, #0d1428 0%, #05070f 55%, #030408 100%);
+    opacity:0; transform:scale(1.02);
+    transition:opacity .6s cubic-bezier(.16,.8,.24,1), transform .6s cubic-bezier(.16,.8,.24,1);
+    padding:24px; box-sizing:border-box; overflow:hidden;
+  }
+  #cxp-overlay.cxp-show{ opacity:1; transform:scale(1); }
+  #cxp-overlay.cxp-hide{ opacity:0; transform:scale(.98); pointer-events:none; }
+  #cxp-overlay *{ box-sizing:border-box; }
+
+  #cxp-aurora{ position:absolute; inset:-20%; pointer-events:none; z-index:0; filter:blur(10px); }
+  #cxp-aurora::before, #cxp-aurora::after{
+    content:""; position:absolute; border-radius:50%; filter:blur(90px); opacity:.35;
+    animation:cxp-drift 16s ease-in-out infinite alternate;
+  }
+  #cxp-aurora::before{
+    width:520px; height:520px; top:-120px; left:-100px;
+    background:radial-gradient(circle,#3B82F6,transparent 70%);
+  }
+  #cxp-aurora::after{
+    width:480px; height:480px; bottom:-140px; right:-100px;
+    background:radial-gradient(circle,#a78bfa,transparent 70%);
+    animation-delay:-8s;
+  }
+  @keyframes cxp-drift{
+    0%{ transform:translate(0,0) scale(1); }
+    100%{ transform:translate(40px,30px) scale(1.08); }
+  }
+
+  #cxp-particles{ position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+  .cxp-particle{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background:rgba(148,178,255,.5);
+    box-shadow:0 0 6px rgba(148,178,255,.55);
+    animation-name:cxp-float; animation-timing-function:linear; animation-iteration-count:infinite;
+  }
+  @keyframes cxp-float{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:.65; }
+    90%{ opacity:.45; }
+    100%{ transform:translateY(-110vh) translateX(var(--cxp-drift,20px)); opacity:0; }
+  }
+
+  #cxp-content{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; text-align:center; width:100%; max-width:980px; }
+
+  #cxp-title{
+    font-family:'Syne', sans-serif; font-weight:700;
+    font-size:clamp(26px,4.4vw,40px); color:#eef0f6;
+    opacity:0; transform:translateY(16px);
+    transition:opacity .6s ease, transform .6s ease; transition-delay:.15s;
+    margin:0 0 10px;
+  }
+  #cxp-overlay.cxp-show #cxp-title{ opacity:1; transform:translateY(0); }
+
+  #cxp-subtitle{
+    font-family:'DM Sans', sans-serif; font-size:14.5px; color:#8892a4;
+    opacity:0; transition:opacity .6s ease; transition-delay:.3s;
+    margin:0 0 40px;
+  }
+  #cxp-overlay.cxp-show #cxp-subtitle{ opacity:1; }
+
+  #cxp-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+    width:100%;
+  }
+  @media (max-width:760px){
+    #cxp-grid{ grid-template-columns:1fr; max-width:360px; }
+  }
+
+  .cxp-card{
+    position:relative; overflow:hidden;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:16px; padding:36px 20px;
+    border-radius:22px;
+    background:rgba(18,22,38,.5);
+    border:1px solid rgba(255,255,255,.1);
+    -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+    box-shadow:0 8px 30px rgba(0,0,0,.35);
+    cursor:pointer; color:inherit; font-family:inherit;
+    opacity:0; transform:translateY(22px) scale(.96);
+    transition:opacity .55s ease, transform .45s cubic-bezier(.16,.8,.24,1), border-color .3s ease, box-shadow .3s ease;
+  }
+  #cxp-overlay.cxp-show .cxp-card{ opacity:1; transform:translateY(0) scale(1); }
+  #cxp-overlay.cxp-show .cxp-card:nth-child(1){ transition-delay:.45s; }
+  #cxp-overlay.cxp-show .cxp-card:nth-child(2){ transition-delay:.58s; }
+  #cxp-overlay.cxp-show .cxp-card:nth-child(3){ transition-delay:.71s; }
+
+  .cxp-card:hover{
+    border-color:rgba(96,165,250,.45);
+    box-shadow:0 0 0 1px rgba(96,165,250,.2), 0 0 40px rgba(59,130,246,.28), 0 16px 40px rgba(0,0,0,.4);
+    transform:translateY(-4px) scale(1.01);
+  }
+  .cxp-card:active{ transform:scale(.97); }
+  .cxp-card.cxp-selected{
+    border-color:rgba(96,165,250,.6);
+    box-shadow:0 0 0 1px rgba(96,165,250,.3), 0 0 50px rgba(59,130,246,.4);
+    transform:scale(1.02);
+  }
+  .cxp-card[disabled]{ cursor:default; }
+  .cxp-card:not(.cxp-selected)[disabled]{ opacity:.35; transform:scale(.97); }
+
+  .cxp-icon{ width:44px; height:44px; color:#cdd6ff; transition:color .3s ease, transform .3s ease; }
+  .cxp-card:hover .cxp-icon{ color:#8fb4ff; transform:scale(1.06); }
+
+  .cxp-name{ font-family:'Syne', sans-serif; font-weight:700; font-size:17px; color:#eef0f6; }
+  .cxp-desc{ font-family:'DM Sans', sans-serif; font-size:12.5px; color:#8892a4; }
+
+  .cxp-ripple{
+    position:absolute; border-radius:50%; background:rgba(255,255,255,.35);
+    transform:scale(0); animation:cxp-ripple-anim .65s ease-out forwards;
+    pointer-events:none;
+  }
+  @keyframes cxp-ripple-anim{ to{ transform:scale(3); opacity:0; } }
+
+  #cxp-loading{
+    position:absolute; inset:0; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .4s ease;
+    background:rgba(3,4,8,.6);
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  }
+  #cxp-loading.cxp-loading-show{ opacity:1; }
+  .cxp-spinner{
+    width:38px; height:38px; border-radius:50%;
+    border:2.5px solid rgba(255,255,255,.14);
+    border-top-color:#60A5FA;
+    animation:cxp-spin .8s linear infinite;
+  }
+  @keyframes cxp-spin{ to{ transform:rotate(360deg); } }
+
+  @media (min-width:1024px){
+    #cxp-content{ max-width:900px; }
+    .cxp-card{ padding:42px 22px; }
+  }
+</style>
+
+<div id="cxp-overlay">
+  <div id="cxp-aurora"></div>
+  <div id="cxp-particles"></div>
+  <div id="cxp-content">
+    <h1 id="cxp-title">Choose Your Experience</h1>
+    <p id="cxp-subtitle">Select the platform you want to preview.</p>
+    <div id="cxp-grid">
+      <button class="cxp-card" type="button" data-platform="android">
+        <svg class="cxp-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.6 9.48l1.84-3.18a.4.4 0 10-.7-.4l-1.86 3.23a10.6 10.6 0 00-8.76 0L6.26 5.9a.4.4 0 10-.7.4L7.4 9.48A9.4 9.4 0 002.5 17h19a9.4 9.4 0 00-3.9-7.52zM7.5 14.25a1.13 1.13 0 110-2.25 1.13 1.13 0 010 2.25zm9 0a1.13 1.13 0 110-2.25 1.13 1.13 0 010 2.25z" fill="currentColor"/>
+          <path d="M3 18v3.5A1.5 1.5 0 004.5 23h.25v-5H3zm16.25 0v5h.25a1.5 1.5 0 001.5-1.5V18h-1.75zM5.75 18v5.5a1.25 1.25 0 002.5 0V18h-2.5zm10 0v5.5a1.25 1.25 0 002.5 0V18h-2.5z" fill="currentColor"/>
+        </svg>
+        <div class="cxp-name">Android</div>
+        <div class="cxp-desc">Optimized for Android Phones</div>
+      </button>
+      <button class="cxp-card" type="button" data-platform="ios">
+        <svg class="cxp-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16.365 1.43c0 1.14-.462 2.15-1.212 2.87-.822.78-2.14 1.38-3.24 1.29-.14-1.1.42-2.24 1.17-2.94.83-.78 2.26-1.36 3.28-1.22zM20.5 17.02c-.55 1.27-.82 1.84-1.53 2.96-1 1.56-2.4 3.5-4.15 3.52-1.55.02-1.95-1.01-4.05-1-2.1.01-2.54 1.02-4.09 1-1.75-.02-3.07-1.78-4.07-3.34-2.8-4.3-3.09-9.35-1.37-12.04 1.22-1.9 3.15-3.02 4.96-3.02 1.84 0 3 1.02 4.53 1.02 1.48 0 2.38-1.02 4.52-1.02 1.6 0 3.3.87 4.5 2.38-3.96 2.17-3.32 7.83.75 9.54z" fill="currentColor"/>
+        </svg>
+        <div class="cxp-name">Apple iOS</div>
+        <div class="cxp-desc">Optimized for iPhone &amp; iPad</div>
+      </button>
+      <button class="cxp-card" type="button" data-platform="desktop">
+        <svg class="cxp-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2.5" y="4" width="19" height="12.5" rx="1.6" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M8.5 20.5h7M12 16.5v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div class="cxp-name">Desktop</div>
+        <div class="cxp-desc">Optimized for Laptop &amp; PC</div>
+      </button>
+    </div>
+  </div>
+  <div id="cxp-loading"><div class="cxp-spinner"></div></div>
+</div>
+
+<script>
+(function(){
+  var LS_KEY = 'selectedPlatform';
+  var overlay = document.getElementById('cxp-overlay');
+  var loading = document.getElementById('cxp-loading');
+  var particlesWrap = document.getElementById('cxp-particles');
+  var cards = overlay.querySelectorAll('.cxp-card');
+  var prevOverflow = '';
+  var settled = false;
+
+  function removeOverlayInstant(){
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  }
+
+  function runWelcome(){
+    if (typeof window.initAliftzyWelcome === 'function') {
+      window.initAliftzyWelcome();
+      return;
+    }
+    // Skrip #wi-overlay ada lebih bawah di dokumen dan belum tentu sudah
+    // dieksekusi; tunggu sampai fungsinya tersedia lalu jalankan.
+    document.addEventListener('DOMContentLoaded', function(){
+      if (typeof window.initAliftzyWelcome === 'function') window.initAliftzyWelcome();
+    });
+  }
+
+  // If a platform was already chosen previously, skip this screen entirely.
+  if (localStorage.getItem(LS_KEY)) {
+    removeOverlayInstant();
+    runWelcome();
+    return;
+  }
+
+  prevOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+
+  var count = 18 + Math.floor(Math.random() * 18); // 18-35
+  for (var i = 0; i < count; i++) {
+    var p = document.createElement('div');
+    p.className = 'cxp-particle';
+    var size = 2 + Math.random() * 4;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.setProperty('--cxp-drift', (Math.random() * 60 - 30) + 'px');
+    var dur = 9 + Math.random() * 11;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = (Math.random() * dur) + 's';
+    particlesWrap.appendChild(p);
+  }
+
+  requestAnimationFrame(function(){ overlay.classList.add('cxp-show'); });
+
+  function selectPlatform(card){
+    if (settled) return;
+    settled = true;
+
+    cards.forEach(function(c){ c.disabled = true; });
+    card.classList.add('cxp-selected');
+
+    localStorage.setItem(LS_KEY, card.getAttribute('data-platform'));
+
+    setTimeout(function(){ loading.classList.add('cxp-loading-show'); }, 180);
+
+    var delay = 800 + Math.random() * 400; // 800-1200ms total transition
+    setTimeout(function(){
+      overlay.classList.remove('cxp-show');
+      overlay.classList.add('cxp-hide');
+      setTimeout(function(){
+        removeOverlayInstant();
+        document.body.style.overflow = prevOverflow;
+        runWelcome();
+      }, 550);
+    }, delay);
+  }
+
+  cards.forEach(function(card){
+    card.addEventListener('click', function(e){
+      if (settled) return;
+      var rect = card.getBoundingClientRect();
+      var ripple = document.createElement('span');
+      var d = Math.max(rect.width, rect.height) * 1.4;
+      ripple.className = 'cxp-ripple';
+      ripple.style.width = ripple.style.height = d + 'px';
+      ripple.style.left = (e.clientX - rect.left - d / 2) + 'px';
+      ripple.style.top = (e.clientY - rect.top - d / 2) + 'px';
+      card.appendChild(ripple);
+      setTimeout(function(){ ripple.remove(); }, 700);
+      selectPlatform(card);
+    });
+  });
+})();
+</script>
+
+
+<!-- ===== WELCOME INTRO OVERLAY (Aliftzy Store) ===== -->
+<style>
+  #wi-overlay{
+    position:fixed; inset:0; z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(5,8,18,.82);
+    -webkit-backdrop-filter:blur(18px);
+    backdrop-filter:blur(18px);
+    opacity:0; transform:scale(.96);
+    transition:opacity .7s cubic-bezier(.16,.8,.24,1), transform .7s cubic-bezier(.16,.8,.24,1);
+    padding:20px; box-sizing:border-box;
+  }
+  #wi-overlay.wi-show{ opacity:1; transform:scale(1); }
+  #wi-overlay.wi-hide{ opacity:0; transform:scale(.96); pointer-events:none; }
+  #wi-overlay *{ box-sizing:border-box; }
+
+  #wi-particles{ position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .wi-particle{
+    position:absolute; bottom:-10px; border-radius:50%;
+    background:rgba(96,165,250,.55);
+    box-shadow:0 0 6px rgba(96,165,250,.6);
+    animation-name:wi-float; animation-timing-function:linear; animation-iteration-count:infinite;
+  }
+  @keyframes wi-float{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    10%{ opacity:.7; }
+    90%{ opacity:.5; }
+    100%{ transform:translateY(-110vh) translateX(var(--wi-drift,20px)); opacity:0; }
+  }
+
+  #wi-card{
+    position:relative;
+    width:92%; max-width:900px;
+    border-radius:24px;
+    background:rgba(15,20,35,.55);
+    border:1px solid rgba(255,255,255,.12);
+    padding:3px;
+    opacity:0; transform:scale(.92);
+    transition:opacity .6s cubic-bezier(.16,.8,.24,1), transform .6s cubic-bezier(.16,.8,.24,1);
+    box-shadow:0 0 30px rgba(59,130,246,.25), 0 0 60px rgba(59,130,246,.15);
+  }
+  #wi-overlay.wi-show #wi-card{ opacity:1; transform:scale(1); transition-delay:.15s; }
+
+  #wi-card::before{
+    content:""; position:absolute; inset:-1px; border-radius:24px; z-index:0;
+    padding:1px;
+    background:linear-gradient(45deg,#3B82F6,#60A5FA,#2563EB,#60A5FA,#3B82F6);
+    background-size:300% 300%;
+    -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+    animation:wi-border-move 6s ease infinite;
+    opacity:.9;
+  }
+  @keyframes wi-border-move{
+    0%{ background-position:0% 50%; }
+    50%{ background-position:100% 50%; }
+    100%{ background-position:0% 50%; }
+  }
+
+  #wi-inner{
+    position:relative; z-index:1;
+    background:rgba(10,14,26,.55);
+    border-radius:21px;
+    padding:28px 28px 32px;
+    display:flex; flex-direction:column; align-items:center; text-align:center;
+  }
+
+  #wi-video-wrap{
+    width:100%; max-width:820px;
+    aspect-ratio:16/9;
+    border-radius:16px;
+    overflow:hidden;
+    background:#05070f;
+    position:relative;
+    opacity:0;
+    transition:opacity .6s ease;
+    margin-bottom:22px;
+  }
+  #wi-video-wrap.wi-video-show{ opacity:1; }
+  #wi-video{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transform:scale(1);
+    transition:transform 6s ease-out;
+  }
+  #wi-video.wi-zoom{ transform:scale(1.03); }
+
+  #wi-heading{
+    font-family:'Syne', sans-serif;
+    font-weight:700;
+    font-size:clamp(24px,4vw,36px);
+    color:#e8eaf0;
+    line-height:1.25;
+    opacity:0; transform:translateY(18px);
+    transition:opacity .5s ease, transform .5s ease;
+    margin:0 0 10px;
+  }
+  #wi-overlay.wi-show #wi-heading{ opacity:1; transform:translateY(0); transition-delay:.9s; }
+  #wi-heading .wi-grad{
+    background:linear-gradient(135deg,#3B82F6,#60A5FA,#2563EB);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    display:block;
+  }
+
+  #wi-subtitle{
+    font-family:'DM Sans', sans-serif;
+    font-size:14.5px;
+    color:#8892a4;
+    max-width:520px;
+    line-height:1.7;
+    opacity:0;
+    transition:opacity .6s ease;
+    margin:0 0 26px;
+  }
+  #wi-overlay.wi-show #wi-subtitle{ opacity:1; transition-delay:1.15s; }
+
+  #wi-footer{
+    font-family:'DM Sans', sans-serif;
+    font-size:11px; color:#4a5568; margin-top:18px;
+    opacity:0; transition:opacity .6s ease;
+  }
+  #wi-overlay.wi-show #wi-footer{ opacity:1; transition-delay:1.5s; }
+
+  #wi-close{
+    position:absolute; top:14px; right:14px; z-index:2;
+    width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,.14);
+    background:rgba(10,14,26,.5); color:#aab2c5; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+    opacity:0; transition:opacity .5s ease, background .2s ease, color .2s ease, transform .18s ease;
+  }
+  #wi-overlay.wi-show #wi-close{ opacity:1; transition-delay:1.4s; }
+  #wi-close:hover{ background:rgba(59,130,246,.25); color:#fff; }
+  #wi-close:active{ transform:scale(.92); }
+
+  #global-change-platform-btn{
+    position:fixed; right:16px; bottom:16px; z-index:10000;
+    display:none; align-items:center; gap:6px;
+    height:34px; padding:0 14px; border-radius:100px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(15,20,35,.55);
+    -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    color:#aab2c5; font-family:'DM Sans', sans-serif; font-size:12px; font-weight:500;
+    cursor:pointer; transition:all .2s ease;
+  }
+  #global-change-platform-btn:hover{ color:#fff; border-color:rgba(96,165,250,.4); box-shadow:0 0 18px rgba(59,130,246,.3); }
+  #global-change-platform-btn svg{ width:13px; height:13px; }
+
+  @media (max-width:640px){
+    #wi-inner{ padding:20px 16px 24px; }
+  }
+</style>
+
+<div id="wi-overlay">
+  <div id="wi-particles"></div>
+  <div id="wi-card">
+    <button id="wi-close" type="button" aria-label="Skip intro">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="wi-inner">
+      <div id="wi-video-wrap">
+        <video id="wi-video" src="https://raw.githubusercontent.com/Alifkece/media/main/uploads/1784259852099_New Project 166 [EDC6548].mp4" playsinline muted preload="auto" controlsList="nodownload noremoteplayback" disablepictureinpicture></video>
+      </div>
+      <h1 id="wi-heading">Welcome to<span class="wi-grad">Aliftzy Store</span></h1>
+      <p id="wi-subtitle">Experience premium digital products with fast delivery, secure payment, and trusted service.</p>
+      <div id="wi-footer">Powered by Aliftzy Store &copy; 2026</div>
+    </div>
+  </div>
+</div>
+
+<button id="global-change-platform-btn" type="button">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 4v5h-5"/></svg>
+  Change Platform
+</button>
+
+<script>
+function initAliftzyWelcome(){
+  var STORAGE_KEY = 'aliftzy_welcome_shown';
+  var overlay = document.getElementById('wi-overlay');
+  if (sessionStorage.getItem(STORAGE_KEY)) {
+    if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    return;
+  }
+
+  var card = document.getElementById('wi-card');
+  var video = document.getElementById('wi-video');
+  var videoWrap = document.getElementById('wi-video-wrap');
+  var closeBtn = document.getElementById('wi-close');
+  var particlesWrap = document.getElementById('wi-particles');
+  var prevOverflow = '';
+  var closed = false;
+
+  // Build floating particles
+  var count = 20 + Math.floor(Math.random() * 21); // 20-40
+  for (var i = 0; i < count; i++) {
+    var p = document.createElement('div');
+    p.className = 'wi-particle';
+    var size = 2 + Math.random() * 4;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = (Math.random() * 100) + '%';
+    p.style.setProperty('--wi-drift', (Math.random() * 60 - 30) + 'px');
+    var dur = 8 + Math.random() * 10;
+    p.style.animationDuration = dur + 's';
+    p.style.animationDelay = (Math.random() * dur) + 's';
+    particlesWrap.appendChild(p);
+  }
+
+  function lockBody(){
+    prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+  }
+  function unlockBody(){
+    document.body.style.overflow = prevOverflow;
+  }
+
+  function fadeAudio(from, to, duration, done){
+    var startTime = null;
+    function step(ts){
+      if (startTime === null) startTime = ts;
+      var t = Math.min(1, (ts - startTime) / duration);
+      video.volume = from + (to - from) * t;
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else if (done) {
+        done();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function startVideo(){
+    // Mulai selalu muted dulu supaya autoplay dijamin lolos di semua browser
+    // (termasuk in-app browser yang strict), lalu unmute otomatis begitu
+    // pemutaran berhasil / saat user berinteraksi pertama kali.
+    video.muted = true;
+    video.volume = 0;
+    videoWrap.classList.add('wi-video-show');
+
+    function armUnmute(){
+      video.classList.add('wi-zoom');
+      function unmuteOnce(){
+        video.muted = false;
+        video.volume = 0;
+        fadeAudio(0, 1, 1000);
+        document.removeEventListener('click', unmuteOnce);
+        document.removeEventListener('touchstart', unmuteOnce);
+      }
+      document.addEventListener('click', unmuteOnce, { once:true });
+      document.addEventListener('touchstart', unmuteOnce, { once:true });
+    }
+
+    var playPromise = video.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.then(armUnmute).catch(function(){
+        // Fallback aman jika attempt pertama gagal: pastikan tetap muted lalu coba lagi
+        video.muted = true;
+        var retryPromise = video.play();
+        if (retryPromise && retryPromise.catch) {
+          retryPromise.then(armUnmute).catch(function(){
+            // Autoplay benar-benar diblokir; video akan mulai berjalan
+            // begitu user menyentuh/klik halaman (fallback terakhir).
+            function playOnInteraction(){
+              video.muted = true;
+              video.play().then(armUnmute).catch(function(){});
+              document.removeEventListener('click', playOnInteraction);
+              document.removeEventListener('touchstart', playOnInteraction);
+            }
+            document.addEventListener('click', playOnInteraction, { once:true });
+            document.addEventListener('touchstart', playOnInteraction, { once:true });
+          });
+        }
+      });
+    } else {
+      armUnmute();
+    }
+  }
+
+  function closeOverlay(){
+    if (closed) return;
+    closed = true;
+    fadeAudio(video.volume, 0, 500, function(){
+      video.pause();
+      video.currentTime = 0;
+    });
+    card.style.transform = 'scale(.96)';
+    overlay.classList.remove('wi-show');
+    overlay.classList.add('wi-hide');
+    setTimeout(function(){
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      unlockBody();
+    }, 550);
+  }
+
+  // Menutup popup lebih awal (skip) tetap otomatis lanjut ke Login
+  closeBtn.addEventListener('click', function(){
+    video.pause();
+    video.currentTime = 0;
+    closeOverlay();
+  });
+
+  // Video selesai diputar -> otomatis lanjut ke Login (fade halus dari closeOverlay)
+  video.addEventListener('ended', function(){
+    closeOverlay();
+  });
+
+  sessionStorage.setItem(STORAGE_KEY, '1');
+  lockBody();
+  requestAnimationFrame(function(){
+    overlay.classList.add('wi-show');
+  });
+  setTimeout(startVideo, 350);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var changeBtn = document.getElementById('global-change-platform-btn');
+  if (!changeBtn) return;
+
+  changeBtn.addEventListener('click', function(){
+    localStorage.removeItem('selectedPlatform');
+    sessionStorage.removeItem('aliftzy_welcome_shown');
+    location.reload();
+  });
+
+  function toggleChangePlatformBtn(page){
+    changeBtn.style.display = (page === 'home') ? 'none' : 'flex';
+  }
+
+  // Hook non-invasif ke showPage yang sudah ada di js/app.js (tanpa mengubah logicnya)
+  var attempts = 0;
+  var waitForShowPage = setInterval(function(){
+    attempts++;
+    if (typeof window.showPage === 'function' && !window.showPage.__cxpWrapped) {
+      var originalShowPage = window.showPage;
+      window.showPage = function(page, sub){
+        originalShowPage(page, sub);
+        toggleChangePlatformBtn(page);
+      };
+      window.showPage.__cxpWrapped = true;
+      clearInterval(waitForShowPage);
+    } else if (attempts > 100) {
+      clearInterval(waitForShowPage);
+    }
+  }, 50);
+
+  // Tampilkan tombol saat halaman login aktif sebelum showPage sempat di-hook
+  if (document.getElementById('page-auth') && document.getElementById('page-auth').style.display !== 'none') {
+    toggleChangePlatformBtn('auth');
+  }
+});
+</script>
+
 </body>
 </html>
