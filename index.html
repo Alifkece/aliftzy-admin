@@ -7,6 +7,7 @@
 <meta name="description" content="Dashboard Admin untuk mengelola produk, stok, order, lagu, dan pengumuman Aliftzy Store.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><rect width=%2224%22 height=%2224%22 rx=%226%22 fill=%22%237c6cff%22/></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/layout.css">
@@ -56,10 +57,10 @@
 
 <!-- ===== APP SHELL ===== -->
 <div id="app-shell" class="hidden">
-  <div class="navbar-backdrop" data-close-mobile-sidebar></div>
+  <div class="sidebar-backdrop" data-close-mobile-sidebar></div>
 
-  <header class="navbar">
-    <div class="navbar-brand">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
       <div class="brand-mark">A</div>
       <div class="brand-text">
         <strong>Aliftzy Admin</strong>
@@ -68,7 +69,7 @@
     </div>
 
     <div class="sidebar-section-label">Menu</div>
-    <nav class="navbar-menu" id="navbar-nav">
+    <nav id="sidebar-nav">
       <a class="nav-item" data-route="dashboard" href="#/dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
         <span class="nav-label">Dashboard</span>
@@ -118,7 +119,7 @@
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       <span class="nav-label">Ciutkan</span>
     </button>
-  </navbar>
+  </aside>
 
   <div class="main-col">
     <header class="topbar">
@@ -160,6 +161,7 @@
 <div id="modal-root"></div>
 <div id="toast-stack"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>
