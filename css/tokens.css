@@ -64,7 +64,7 @@
   --dur-slow: 420ms;
 
   /* ---- Layout ---- */
-  --sidebar-w: 264px;
+  /* --sidebar-w: 264px; */
   --sidebar-w-collapsed: 78px;
   --topbar-h: 68px;
 }
