@@ -26,19 +26,19 @@
   color: #fff;
   box-shadow: var(--btn-3d-primary);
 }
-.btn-primary:hover { top: -1px; box-shadow: var(--btn-3d-primary-hover); }
-.btn-primary:active { top: 1px; box-shadow: var(--btn-3d-primary-active); }
+.btn-primary:hover { top: -2px; box-shadow: var(--btn-3d-primary-hover); }
+.btn-primary:active { top: 2px; box-shadow: var(--btn-3d-primary-active); }
 .btn-ghost {
   background: var(--panel);
   border-color: var(--border);
   color: var(--text);
   box-shadow: var(--btn-3d-ghost);
 }
-.btn-ghost:hover { top: -1px; background: var(--panel-hover); border-color: var(--border-strong); box-shadow: var(--btn-3d-ghost-hover); }
-.btn-ghost:active { top: 1px; box-shadow: var(--btn-3d-ghost-active); }
+.btn-ghost:hover { top: -2px; background: var(--panel-hover); border-color: var(--border-strong); box-shadow: var(--btn-3d-ghost-hover); }
+.btn-ghost:active { top: 2px; box-shadow: var(--btn-3d-ghost-active); }
 .btn-danger { background: var(--rose-soft); color: var(--rose); border-color: rgba(237,66,69,0.3); box-shadow: var(--btn-3d-danger); }
-.btn-danger:hover { top: -1px; background: rgba(237,66,69,0.22); box-shadow: var(--btn-3d-danger-hover); }
-.btn-danger:active { top: 1px; box-shadow: var(--btn-3d-danger-active); }
+.btn-danger:hover { top: -2px; background: rgba(237,66,69,0.22); box-shadow: var(--btn-3d-danger-hover); }
+.btn-danger:active { top: 2px; box-shadow: var(--btn-3d-danger-active); }
 .btn-sm { padding: 7px 13px; font-size: 12px; }
 .btn-icon { padding: 9px; }
 .btn:disabled { opacity: 0.5; pointer-events: none; top: 0 !important; box-shadow: none !important; }
@@ -72,7 +72,7 @@
   box-shadow: var(--card-3d);
   transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.stat-card:hover { transform: translateY(-4px); border-color: var(--border-strong); background: var(--panel-2); box-shadow: var(--card-3d-hover); }
+.stat-card:hover { transform: translateY(-6px); border-color: var(--border-strong); background: var(--panel-2); box-shadow: var(--card-3d-hover); }
 .stat-card .stat-icon {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
