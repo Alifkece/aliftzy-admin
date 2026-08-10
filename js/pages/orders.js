@@ -39,8 +39,8 @@ export async function render(container) {
       <div class="section-card-body">
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Order</th><th>Pelanggan</th><th>Harga</th><th>Status</th><th>Tanggal</th><th></th></tr></thead>
-            <tbody id="order-tbody">${skeletonTableRows(5, 6)}</tbody>
+            <thead><tr><th>Order</th><th>Pelanggan</th><th>WhatsApp</th><th>Harga</th><th>Status</th><th>Tanggal</th><th></th></tr></thead>
+            <tbody id="order-tbody">${skeletonTableRows(5, 7)}</tbody>
           </table>
         </div>
       </div>
@@ -72,7 +72,7 @@ async function loadAndRender() {
     renderTable();
   } catch (e) {
     console.error(e);
-    document.getElementById("order-tbody").innerHTML = `<tr><td colspan="6">${errorState({})}</td></tr>`;
+    document.getElementById("order-tbody").innerHTML = `<tr><td colspan="7">${errorState({})}</td></tr>`;
   }
 }
 
@@ -81,11 +81,11 @@ function renderTable() {
   let list = allOrders;
   if (statusFilter !== "all") list = list.filter((o) => normalizeStatus(o) === statusFilter);
   if (searchTerm) {
-    list = list.filter((o) => `${o.productName || ""} ${o.id} ${o.userId || ""}`.toLowerCase().includes(searchTerm));
+    list = list.filter((o) => `${o.productName || ""} ${o.id} ${o.userId || ""} ${o.whatsapp || ""}`.toLowerCase().includes(searchTerm));
   }
 
   if (!list.length) {
-    tbody.innerHTML = `<tr><td colspan="6">${emptyState({ title: "Tidak ada order", message: "Belum ada order yang cocok dengan filter ini." })}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7">${emptyState({ title: "Tidak ada order", message: "Belum ada order yang cocok dengan filter ini." })}</td></tr>`;
     return;
   }
 
@@ -100,6 +100,7 @@ function renderTable() {
           <div class="cell-mono cell-muted">${escHtml(o.id)}</div>
         </td>
         <td class="cell-muted">${escHtml(o.userId ? o.userId.slice(0, 10) + "…" : "-")}</td>
+        <td class="cell-mono">${escHtml(o.whatsapp || "-")}</td>
         <td class="cell-mono">${rupiah(o.price)}</td>
         <td><span class="badge badge-${tone}">${status}</span></td>
         <td class="cell-muted">${formatDate(o.createdAt)}</td>
@@ -131,6 +132,7 @@ function openOrderDetail(id) {
       <div class="detail-item"><label>Produk</label><div class="val">${escHtml(o.productName || "-")}${o.packageName ? ` <span class="cell-muted">(${escHtml(o.packageName)})</span>` : ""}</div></div>
       <div class="detail-item"><label>Harga</label><div class="val">${rupiah(o.price)}</div></div>
       <div class="detail-item"><label>User ID</label><div class="val cell-mono">${escHtml(o.userId || "-")}</div></div>
+      <div class="detail-item"><label>WhatsApp</label><div class="val">${escHtml(o.whatsapp || "-")}</div></div>
       <div class="detail-item"><label>Metode Bayar</label><div class="val">${escHtml(o.payment || "-")}</div></div>
       <div class="detail-item"><label>Dibuat</label><div class="val">${formatDate(o.createdAt)}</div></div>
       <div class="detail-item"><label>Dibayar</label><div class="val">${o.paidAt ? formatDate(o.paidAt) : "-"}</div></div>
