@@ -248,8 +248,8 @@
   box-shadow: var(--btn-3d-ghost);
   transition: top var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
 }
-.icon-btn:hover { top: -1px; color: var(--text); border-color: var(--border-strong); background: var(--panel-hover); box-shadow: var(--btn-3d-ghost-hover); }
-.icon-btn:active { top: 1px; box-shadow: var(--btn-3d-ghost-active); }
+.icon-btn:hover { top: -2px; color: var(--text); border-color: var(--border-strong); background: var(--panel-hover); box-shadow: var(--btn-3d-ghost-hover); }
+.icon-btn:active { top: 2px; box-shadow: var(--btn-3d-ghost-active); }
 @media (prefers-reduced-motion: reduce) {
   .icon-btn:hover, .icon-btn:active { top: 0; }
 }
