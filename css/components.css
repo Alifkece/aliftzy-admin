@@ -19,15 +19,15 @@
   color: #fff;
   box-shadow: var(--shadow-glow-signal);
 }
-.btn-primary:hover { box-shadow: 0 0 0 1px rgba(124,108,255,0.5), 0 10px 32px rgba(124,108,255,0.28); }
+.btn-primary:hover { box-shadow: 0 0 0 1px rgba(88,101,242,0.5), 0 10px 32px rgba(88,101,242,0.28); }
 .btn-ghost {
   background: var(--panel);
   border-color: var(--border);
   color: var(--text);
 }
 .btn-ghost:hover { background: var(--panel-hover); border-color: var(--border-strong); }
-.btn-danger { background: var(--rose-soft); color: var(--rose); border-color: rgba(251,69,112,0.3); }
-.btn-danger:hover { background: rgba(251,69,112,0.22); }
+.btn-danger { background: var(--rose-soft); color: var(--rose); border-color: rgba(237,66,69,0.3); }
+.btn-danger:hover { background: rgba(237,66,69,0.22); }
 .btn-sm { padding: 7px 13px; font-size: 12px; }
 .btn-icon { padding: 9px; }
 .btn:disabled { opacity: 0.5; pointer-events: none; }
@@ -110,7 +110,7 @@
   transition: all var(--dur-fast) var(--ease-soft);
 }
 .chip:hover { border-color: var(--border-strong); color: var(--text); }
-.chip.active { background: var(--signal-soft); border-color: rgba(124,108,255,0.4); color: var(--signal); }
+.chip.active { background: var(--signal-soft); border-color: rgba(88,101,242,0.4); color: var(--signal); }
 
 /* ---------- Form fields ---------- */
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
@@ -207,7 +207,7 @@ table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 }
 .state-block h3 { font-size: 14.5px; margin-bottom: 6px; }
 .state-block p { font-size: 12.5px; color: var(--text-3); max-width: 320px; margin: 0 auto 18px; }
-.state-block.state-error .state-icon { color: var(--rose); background: var(--rose-soft); border-color: rgba(251,69,112,0.25); }
+.state-block.state-error .state-icon { color: var(--rose); background: var(--rose-soft); border-color: rgba(237,66,69,0.25); }
 
 /* ---------- Modal ---------- */
 .modal-overlay {
