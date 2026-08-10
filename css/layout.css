@@ -238,15 +238,21 @@
 .topbar-actions { display: flex; align-items: center; gap: 10px; }
 .icon-btn {
   position: relative;
+  top: 0;
   width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--r-md);
   background: var(--panel);
   border: 1px solid var(--border-soft);
   color: var(--text-2);
-  transition: all var(--dur-fast) var(--ease-soft);
+  box-shadow: var(--btn-3d-ghost);
+  transition: top var(--dur-fast) var(--ease-soft), color var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft);
 }
-.icon-btn:hover { color: var(--text); border-color: var(--border-strong); background: var(--panel-hover); }
+.icon-btn:hover { top: -1px; color: var(--text); border-color: var(--border-strong); background: var(--panel-hover); box-shadow: var(--btn-3d-ghost-hover); }
+.icon-btn:active { top: 1px; box-shadow: var(--btn-3d-ghost-active); }
+@media (prefers-reduced-motion: reduce) {
+  .icon-btn:hover, .icon-btn:active { top: 0; }
+}
 .icon-btn .dot {
   position: absolute; top: 7px; right: 8px;
   width: 7px; height: 7px; border-radius: 50%;
