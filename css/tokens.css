@@ -62,20 +62,21 @@
   --shadow-glow-signal: 0 0 0 1px rgba(88, 101, 242, 0.35), 0 8px 28px rgba(88, 101, 242, 0.18);
 
   /* ---- 3D tactile push (Store's signature "chunky" button/card depth,
-     ported at a lighter weight — dashboards pack many buttons/rows, so a
-     3-4px offset reads as tactile without the heavier arcade feel Store
-     uses on its hero buttons) ---- */
-  --btn-3d-primary: 0 3px 0 0 #28328c;
-  --btn-3d-primary-hover: 0 4px 0 0 #28328c, 0 10px 22px rgba(88, 101, 242, 0.32);
+     ported near Store's actual weight so it's visible against a near-black
+     bg — earlier pass at 1-3px offset was too thin to read as anything).
+     Glow is baked into the RESTING shadow too, not just :hover, since
+     Store buttons glow even at rest. ---- */
+  --btn-3d-primary: 0 4px 0 0 #28328c, 0 0 16px rgba(88, 101, 242, 0.3);
+  --btn-3d-primary-hover: 0 6px 0 0 #28328c, 0 0 28px rgba(88, 101, 242, 0.55);
   --btn-3d-primary-active: 0 1px 0 0 #28328c;
-  --btn-3d-ghost: 0 3px 0 0 rgba(0, 0, 0, 0.4);
-  --btn-3d-ghost-hover: 0 4px 0 0 rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.25);
-  --btn-3d-ghost-active: 0 1px 0 0 rgba(0, 0, 0, 0.4);
-  --btn-3d-danger: 0 3px 0 0 #7a2224;
-  --btn-3d-danger-hover: 0 4px 0 0 #7a2224, 0 8px 18px rgba(237, 66, 69, 0.22);
+  --btn-3d-ghost: 0 4px 0 0 rgba(0, 0, 0, 0.55);
+  --btn-3d-ghost-hover: 0 6px 0 0 rgba(0, 0, 0, 0.55), 0 0 16px rgba(0, 240, 255, 0.18);
+  --btn-3d-ghost-active: 0 1px 0 0 rgba(0, 0, 0, 0.55);
+  --btn-3d-danger: 0 4px 0 0 #7a2224, 0 0 14px rgba(237, 66, 69, 0.22);
+  --btn-3d-danger-hover: 0 6px 0 0 #7a2224, 0 0 26px rgba(237, 66, 69, 0.5);
   --btn-3d-danger-active: 0 1px 0 0 #7a2224;
-  --card-3d: 0 4px 0 0 rgba(0, 0, 0, 0.35), 0 12px 26px rgba(0, 0, 0, 0.3);
-  --card-3d-hover: 0 8px 0 0 rgba(0, 0, 0, 0.35), 0 20px 40px rgba(0, 0, 0, 0.38), 0 0 22px rgba(88, 101, 242, 0.16);
+  --card-3d: 0 6px 0 0 rgba(0, 0, 0, 0.5), 0 16px 32px rgba(0, 0, 0, 0.4);
+  --card-3d-hover: 0 10px 0 0 rgba(0, 0, 0, 0.5), 0 26px 50px rgba(0, 0, 0, 0.5), 0 0 32px rgba(88, 101, 242, 0.28);
 
   /* ---- Motion (tidak diubah) ---- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
