@@ -3,35 +3,50 @@
    ========================================================================== */
 
 /* ---------- Buttons ---------- */
+/* Tactile push-down feel ported from Store's .btn: a hard offset shadow
+   plus a `top` nudge on hover/active reads as a physical button being
+   pressed. Kept to a light 1-3px travel (vs. Store's 2-6px on hero CTAs)
+   so it stays crisp in a dense dashboard full of buttons. Uses `top` on a
+   `position: relative` element rather than `transform`, so it composes
+   cleanly with `.btn-icon`/`.btn-sm` without fighting other transforms. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 18px;
   border-radius: var(--r-md);
   border: 1px solid transparent;
   font-size: 13px; font-weight: 600;
-  transition: transform var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
+  position: relative;
+  top: 0;
+  transition: top var(--dur-fast) var(--ease-soft), box-shadow var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft);
   white-space: nowrap;
 }
 .btn svg { width: 15px; height: 15px; }
-.btn:active { transform: scale(0.97); }
 .btn-primary {
   background: linear-gradient(135deg, var(--signal), var(--signal-2));
   color: #fff;
-  box-shadow: var(--shadow-glow-signal);
+  box-shadow: var(--btn-3d-primary);
 }
-.btn-primary:hover { box-shadow: 0 0 0 1px rgba(88,101,242,0.5), 0 10px 32px rgba(88,101,242,0.28); }
+.btn-primary:hover { top: -1px; box-shadow: var(--btn-3d-primary-hover); }
+.btn-primary:active { top: 1px; box-shadow: var(--btn-3d-primary-active); }
 .btn-ghost {
   background: var(--panel);
   border-color: var(--border);
   color: var(--text);
+  box-shadow: var(--btn-3d-ghost);
 }
-.btn-ghost:hover { background: var(--panel-hover); border-color: var(--border-strong); }
-.btn-danger { background: var(--rose-soft); color: var(--rose); border-color: rgba(237,66,69,0.3); }
-.btn-danger:hover { background: rgba(237,66,69,0.22); }
+.btn-ghost:hover { top: -1px; background: var(--panel-hover); border-color: var(--border-strong); box-shadow: var(--btn-3d-ghost-hover); }
+.btn-ghost:active { top: 1px; box-shadow: var(--btn-3d-ghost-active); }
+.btn-danger { background: var(--rose-soft); color: var(--rose); border-color: rgba(237,66,69,0.3); box-shadow: var(--btn-3d-danger); }
+.btn-danger:hover { top: -1px; background: rgba(237,66,69,0.22); box-shadow: var(--btn-3d-danger-hover); }
+.btn-danger:active { top: 1px; box-shadow: var(--btn-3d-danger-active); }
 .btn-sm { padding: 7px 13px; font-size: 12px; }
 .btn-icon { padding: 9px; }
-.btn:disabled { opacity: 0.5; pointer-events: none; }
+.btn:disabled { opacity: 0.5; pointer-events: none; top: 0 !important; box-shadow: none !important; }
 .btn-block { width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: box-shadow var(--dur-fast) var(--ease-soft), background var(--dur-fast) var(--ease-soft), border-color var(--dur-fast) var(--ease-soft); }
+  .btn:hover, .btn:active { top: 0; }
+}
 
 /* ---------- Card / Panel ---------- */
 .glass-panel {
@@ -54,9 +69,10 @@
   border-radius: var(--r-lg);
   background: var(--panel);
   border: 1px solid var(--border-soft);
-  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  box-shadow: var(--card-3d);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), background var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.stat-card:hover { transform: translateY(-3px); border-color: var(--border-strong); background: var(--panel-2); }
+.stat-card:hover { transform: translateY(-4px); border-color: var(--border-strong); background: var(--panel-2); box-shadow: var(--card-3d-hover); }
 .stat-card .stat-icon {
   width: 36px; height: 36px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
@@ -85,6 +101,7 @@
   border: 1px solid var(--border-soft);
   border-radius: var(--r-lg);
   overflow: hidden;
+  box-shadow: var(--card-3d);
 }
 .section-card-head {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
