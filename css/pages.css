@@ -45,7 +45,7 @@
 /* ---------- Product grid (card view alt) ---------- */
 .product-tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
 .product-tile { border: 1px solid var(--border-soft); border-radius: var(--r-md); overflow: hidden; background: var(--panel-solid); box-shadow: var(--card-3d); transition: all var(--dur) var(--ease-soft); }
-.product-tile:hover { border-color: var(--signal); transform: translateY(-4px); box-shadow: var(--card-3d-hover); }
+.product-tile:hover { border-color: var(--signal); transform: translateY(-6px); box-shadow: var(--card-3d-hover); }
 .product-tile img { width: 100%; height: 110px; object-fit: cover; display: block; background: var(--panel-2); }
 .product-tile-noimg { width: 100%; height: 110px; display: flex; align-items: center; justify-content: center; background: var(--panel-2); color: var(--text-3); }
 
@@ -108,7 +108,7 @@
   overflow: hidden;
   transition: all var(--dur) var(--ease-soft);
 }
-.media-card:hover { border-color: var(--signal); transform: translateY(-4px); box-shadow: var(--card-3d-hover); }
+.media-card:hover { border-color: var(--signal); transform: translateY(-6px); box-shadow: var(--card-3d-hover); }
 .media-card-preview { aspect-ratio: 16 / 9; background: var(--panel-2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .media-card-preview:has(video) { aspect-ratio: 19 / 6; }
 .media-card-preview img, .media-card-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
