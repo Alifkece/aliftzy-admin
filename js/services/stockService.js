@@ -1,7 +1,11 @@
 // ===== STOCK SERVICE =====
-// Collection: "stock" (Store membaca via loadStockPublic() di js/app.js:
-// getDocs(collection(db,"stock")), lalu HANYA memakai field `productId`
-// dan `sold` untuk menghitung badge "x/y tersedia" di setiap produk).
+// Collection: "stock". Store TIDAK LAGI membaca collection ini langsung
+// dari browser (lihat audit stok) — Store sekarang memanggil endpoint
+// backend /stock-availability, yang membaca collection ini lewat Admin SDK
+// dan hanya mengirim balik agregat aman (jumlah tersedia/total per
+// productId+packageName), tanpa field kredensial. Perubahan itu tidak
+// menyentuh struktur dokumen "stock" sama sekali - hanya CARA Store
+// membacanya.
 //
 // Firestore Security Rules (production, TIDAK diubah oleh Admin):
 //   match /stock/{docId} {
@@ -31,7 +35,7 @@
 // pemisahan stok per paket yang diminta.
 import { db } from "../firebase-config.js";
 import {
-  collection, doc, getDocs, setDoc, updateDoc, deleteDoc, serverTimestamp,
+  collection, doc, getDocs, onSnapshot, setDoc, updateDoc, deleteDoc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { genId } from "../utils/format.js";
 
@@ -40,6 +44,25 @@ const COL = "stock";
 export async function listStock() {
   const snap = await getDocs(collection(db, COL));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Realtime subscription ke seluruh collection "stock" - dipakai halaman
+ * Stock Admin (js/pages/stock.js) supaya perubahan AVAILABLE -> SOLD yang
+ * terjadi lewat webhook payment (backend, saat buyer bayar) langsung
+ * terlihat tanpa Admin perlu refresh manual. Hanya dipanggil dari
+ * halaman Admin yang sudah login sebagai admin, jadi tunduk pada Firestore
+ * Rules `allow read: if isAdmin()` di atas seperti listStock().
+ *
+ * Call yang dikembalikan untuk unsubscribe (dipanggil otomatis saat
+ * halaman Stock di-unmount, lihat MutationObserver di stock.js).
+ */
+export function subscribeStock(onChange, onError) {
+  return onSnapshot(
+    collection(db, COL),
+    (snap) => onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+    (err) => onError?.(err)
+  );
 }
 
 export async function saveStockItem(id, data) {
