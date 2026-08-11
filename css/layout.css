@@ -318,8 +318,13 @@
 .auth-brand h1 { font-size: 19px; text-align: center; }
 .auth-brand p { font-size: 12.5px; color: var(--text-3); text-align: center; }
 
+
 /* ---------- Responsive ---------- */
-@media (max-width: 1024px) {
+/* Mobile breakpoint lowered from 1024px -> 768px. Below this, the sidebar
+   becomes the fixed drawer + hamburger (behavior/markup untouched).
+   768px and above now uses the desktop horizontal navbar (see next block),
+   so "desktop kecil" windows no longer drop into mobile mode. */
+@media (max-width: 768px) {
   #app-shell { grid-template-columns: 1fr; }
   .sidebar {
     position: fixed;
@@ -356,11 +361,11 @@
   .topbar-profile-meta { display: none; }
 }
 
-/* ---------- Desktop navbar (>1024px) ----------
-   Mobile/tablet (<=1024px) is untouched above — this block only
-   re-shapes the same sidebar markup into a horizontal top navbar
-   for wide viewports. No DOM, JS, or mobile CSS is affected. */
-@media (min-width: 1025px) {
+/* ---------- Desktop navbar (>=769px) ----------
+   Mobile (<=768px) is untouched above — this block re-shapes the same
+   sidebar markup into a horizontal top navbar, from small desktop
+   windows up through wide monitors. No DOM, JS, or mobile CSS changes. */
+@media (min-width: 769px) {
   #app-shell {
     display: flex;
     flex-direction: column;
@@ -435,4 +440,35 @@
     max-width: 1600px;
     margin: 0 auto;
   }
+}
+
+/* ---------- Desktop navbar — fluid narrow desktop ----------
+   Same desktop navbar as the block above; these two tiers only compact
+   spacing/sizing so it keeps fitting as the window narrows towards the
+   768px mobile handoff. Nothing here applies above 1280px, so wide
+   desktop (1366px and up) is completely untouched. #sidebar-nav already
+   scrolls horizontally (overflow-x: auto, above) if items still don't
+   fit, so nothing is ever cut off or overlapping. */
+@media (min-width: 769px) and (max-width: 1280px) {
+  .sidebar { padding: 0 20px; }
+  #app-shell.sidebar-collapsed .sidebar { padding: 0 20px; }
+  .topbar { padding: 0 20px; gap: 12px; }
+  .page-content { padding: 22px; }
+  .topbar-search { max-width: 220px; }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar { padding: 0 16px; gap: 2px; }
+  #app-shell.sidebar-collapsed .sidebar { padding: 0 16px; }
+  .sidebar-brand { margin-right: 12px; }
+  .nav-item { padding: 8px 9px; gap: 8px; font-size: 12.5px; }
+  .nav-item svg { width: 16px; height: 16px; }
+  .topbar { padding: 0 16px; gap: 10px; }
+  .topbar-search { max-width: 160px; }
+  .topbar-search input { padding: 8px 12px 8px 34px; font-size: 12.5px; }
+  .page-content { padding: 18px; }
+}
+
+@media (min-width: 769px) and (max-width: 900px) {
+  .topbar-search { display: none; }
 }
