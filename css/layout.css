@@ -355,3 +355,84 @@
   .topbar { padding: 0 16px; }
   .topbar-profile-meta { display: none; }
 }
+
+/* ---------- Desktop navbar (>1024px) ----------
+   Mobile/tablet (<=1024px) is untouched above — this block only
+   re-shapes the same sidebar markup into a horizontal top navbar
+   for wide viewports. No DOM, JS, or mobile CSS is affected. */
+@media (min-width: 1025px) {
+  #app-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  #app-shell.sidebar-collapsed { grid-template-columns: none; }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: var(--navbar-h);
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    padding: 0 28px;
+    border-right: none;
+    border-bottom: 1px solid var(--border-soft);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+  #app-shell.sidebar-collapsed .sidebar { padding: 0 28px; }
+  .sidebar::-webkit-scrollbar { height: 4px; }
+
+  .sidebar-brand {
+    padding: 0;
+    margin-right: 18px;
+    flex-shrink: 0;
+  }
+  .brand-text { opacity: 1; width: auto; }
+  #app-shell.sidebar-collapsed .brand-text { opacity: 1; width: auto; }
+
+  .sidebar-section-label { display: none; }
+
+  #sidebar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    height: 100%;
+  }
+
+  .nav-item { flex-shrink: 0; }
+  .nav-item .nav-label { opacity: 1; width: auto; }
+  #app-shell.sidebar-collapsed .nav-item .nav-label { opacity: 1; width: auto; }
+  #app-shell.sidebar-collapsed .nav-item { justify-content: flex-start; }
+  .nav-item.active::before {
+    left: 8px;
+    right: 8px;
+    top: auto;
+    bottom: -1px;
+    width: auto;
+    height: 3px;
+    border-radius: var(--r-pill) var(--r-pill) 0 0;
+    background: linear-gradient(90deg, var(--signal), var(--cyan));
+  }
+  #app-shell.sidebar-collapsed .nav-item.active::before { left: 8px; }
+  #app-shell.sidebar-collapsed .nav-item .nav-badge { display: inline-block; }
+  .nav-item .nav-eq { margin-left: 8px; }
+  #app-shell.sidebar-collapsed .nav-item .nav-eq { display: flex; }
+
+  .sidebar-spacer { display: none; }
+  .sidebar-collapse-btn { display: none; }
+
+  .main-col { min-width: 0; }
+  .topbar { top: var(--navbar-h); }
+
+  .page-content {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
