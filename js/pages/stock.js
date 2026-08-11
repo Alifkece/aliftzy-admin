@@ -3,7 +3,7 @@
 // stock/{id} — collection ini hanya bisa dibaca/ditulis oleh Admin sesuai
 // Firestore Security Rules (allow read/write: if isAdmin()), jadi tidak
 // perlu struktur tambahan untuk menyembunyikan kredensial.
-import { listStock, saveStockItem, deleteStockItem } from "../services/stockService.js";
+import { listStock, subscribeStock, saveStockItem, deleteStockItem } from "../services/stockService.js";
 import { listProducts } from "../services/productsService.js";
 import { openModal, closeModal } from "../components/modal.js";
 import { confirmDialog } from "../components/confirmDialog.js";
@@ -17,43 +17,51 @@ let products = [];
 let searchTerm = "";
 let statusFilter = "all"; // all | available | sold
 let productFilter = "all";
+// Unsubscribe function untuk realtime listener stok (lihat subscribeStock
+// di services/stockService.js) - dipanggil saat halaman Stock ditinggalkan
+// supaya listener tidak menumpuk setiap kali halaman ini dibuka lagi.
+let stockUnsub = null;
 
 export async function render(container) {
   container.innerHTML = `
-    <div class="page-header flex-between">
-      <div>
-        <h1>Stock</h1>
-        <p>Kelola akun tersedia untuk setiap produk. Store menampilkan jumlah stok secara realtime.</p>
+    <div data-page-root="stock">
+      <div class="page-header flex-between">
+        <div>
+          <h1>Stock</h1>
+          <p>Kelola akun tersedia untuk setiap produk. Store menampilkan jumlah stok secara realtime.</p>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-add-stock">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Akun
+        </button>
       </div>
-      <button type="button" class="btn btn-primary" id="btn-add-stock">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Tambah Akun
-      </button>
-    </div>
 
-    <section class="section-card">
-      <div class="toolbar">
-        <div class="field-search">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="search" id="stock-search" placeholder="Cari email / label...">
+      <section class="section-card">
+        <div class="toolbar">
+          <div class="field-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="stock-search" placeholder="Cari email / label...">
+          </div>
+          <select id="product-filter" style="max-width:220px;"><option value="all">Semua Produk</option></select>
+          <div class="chip-filter">
+            <button type="button" class="chip active" data-status="all">Semua</button>
+            <button type="button" class="chip" data-status="available">Tersedia</button>
+            <button type="button" class="chip" data-status="sold">Terjual</button>
+          </div>
         </div>
-        <select id="product-filter" style="max-width:220px;"><option value="all">Semua Produk</option></select>
-        <div class="chip-filter">
-          <button type="button" class="chip active" data-status="all">Semua</button>
-          <button type="button" class="chip" data-status="available">Tersedia</button>
-          <button type="button" class="chip" data-status="sold">Terjual</button>
+        <div class="section-card-body">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Akun</th><th>Produk</th><th>Status</th><th>Catatan</th><th></th></tr></thead>
+              <tbody id="stock-tbody">${skeletonTableRows(4, 6)}</tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <div class="section-card-body">
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead><tr><th>Akun</th><th>Produk</th><th>Status</th><th>Catatan</th><th></th></tr></thead>
-            <tbody id="stock-tbody">${skeletonTableRows(4, 6)}</tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   `;
+
+  const pageRoot = container.querySelector('[data-page-root="stock"]');
 
   container.querySelector("#btn-add-stock").addEventListener("click", () => openStockForm(null));
   container.querySelector("#stock-search").addEventListener(
@@ -72,11 +80,25 @@ export async function render(container) {
   });
 
   await loadAndRender(container);
+
+  // Self-contained cleanup: tidak ada router lifecycle hook, jadi pantau
+  // pageRoot ini dilepas dari DOM (halaman lain me-render ulang
+  // #page-content) lalu hentikan listener realtime stok - pola yang sama
+  // dipakai halaman Music (lihat js/pages/songs.js).
+  const observer = new MutationObserver(() => {
+    if (!document.body.contains(pageRoot)) {
+      if (stockUnsub) { stockUnsub(); stockUnsub = null; }
+      observer.disconnect();
+    }
+  });
+  observer.observe(container, { childList: true });
 }
 
 async function loadAndRender(container) {
+  if (stockUnsub) { stockUnsub(); stockUnsub = null; }
+
   try {
-    [allStock, products] = await Promise.all([listStock(), listProducts()]);
+    products = await listProducts();
     const sel = container.querySelector("#product-filter");
     sel.innerHTML =
       `<option value="all">Semua Produk</option>` +
@@ -85,7 +107,21 @@ async function loadAndRender(container) {
       productFilter = sel.value;
       renderTable();
     });
-    renderTable();
+
+    // REALTIME: webhook payment (backend) bisa mengubah dokumen stok dari
+    // AVAILABLE -> SOLD kapan saja saat buyer bayar. Pakai listener
+    // realtime (bukan sekali-jalan) supaya Admin yang sedang membuka
+    // halaman ini melihat perubahan tanpa refresh manual.
+    stockUnsub = subscribeStock(
+      (items) => {
+        allStock = items;
+        renderTable();
+      },
+      (err) => {
+        console.error(err);
+        document.getElementById("stock-tbody").innerHTML = `<tr><td colspan="5">${errorState({})}</td></tr>`;
+      }
+    );
   } catch (e) {
     console.error(e);
     document.getElementById("stock-tbody").innerHTML = `<tr><td colspan="5">${errorState({})}</td></tr>`;
