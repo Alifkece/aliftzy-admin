@@ -319,53 +319,28 @@
 .auth-brand p { font-size: 12.5px; color: var(--text-3); text-align: center; }
 
 
-/* ---------- Responsive ---------- */
-/* Mobile breakpoint lowered from 1024px -> 768px. Below this, the sidebar
-   becomes the fixed drawer + hamburger (behavior/markup untouched).
-   768px and above now uses the desktop horizontal navbar (see next block),
-   so "desktop kecil" windows no longer drop into mobile mode. */
-@media (max-width: 768px) {
-  #app-shell { grid-template-columns: 1fr; }
-  .sidebar {
-    position: fixed;
-    left: 0; top: 0;
-    z-index: 100;
-    width: var(--sidebar-w);
-    transform: translateX(-100%);
-    transition: transform var(--dur-slow) var(--ease);
-    box-shadow: var(--shadow-lg);
-  }
-  #app-shell.mobile-open .sidebar { transform: translateX(0); }
-  #app-shell.sidebar-collapsed .sidebar { padding: 20px 16px; }
-  #app-shell.sidebar-collapsed .brand-text { opacity: 1; width: auto; }
-  #app-shell.sidebar-collapsed .nav-item .nav-label { opacity: 1; width: auto; }
-  #app-shell.sidebar-collapsed .nav-item { justify-content: flex-start; }
-  .topbar-mobile-toggle {
-    display: flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px; border-radius: var(--r-md);
-    background: var(--panel); border: 1px solid var(--border-soft); color: var(--text);
-  }
-  .topbar-search { display: none; }
-  .sidebar-backdrop {
-    display: none;
-    position: fixed; inset: 0; z-index: 90;
-    background: rgba(0,0,0,0.6);
-    transform: translateZ(0);
-    isolation: isolate;
-  }
-  #app-shell.mobile-open .sidebar-backdrop { display: block; }
-}
-@media (max-width: 640px) {
-  .page-content { padding: 18px; }
-  .topbar { padding: 0 16px; }
-  .topbar-profile-meta { display: none; }
-}
+/* ==========================================================================
+   RESPONSIVE — capability-based (NOT width-based)
+   ==========================================================================
+   The old approach gated "desktop navbar" behind min-width:769px and
+   "mobile drawer" behind max-width:768px. That's exactly why a resized
+   Chrome window (fine pointer + real hover) got pushed into mobile mode
+   once it got narrow — it was being judged purely by pixel width.
 
-/* ---------- Desktop navbar (>=769px) ----------
-   Mobile (<=768px) is untouched above — this block re-shapes the same
-   sidebar markup into a horizontal top navbar, from small desktop
-   windows up through wide monitors. No DOM, JS, or mobile CSS changes. */
-@media (min-width: 769px) {
+   Now the fork is decided by INPUT CAPABILITY, not width:
+     - (hover: hover) and (pointer: fine)  -> real desktop (mouse/trackpad),
+       always gets the horizontal navbar, no matter how small the window is.
+     - (hover: none), (pointer: coarse)    -> touch device, always gets the
+       mobile drawer, no matter how wide the screen is.
+   Width-based tiers still exist below, but only to COMPACT the desktop
+   navbar further as a fine-pointer window shrinks — they never flip it
+   into the mobile drawer. ========================================================================== */
+
+/* ---------- DESKTOP NAVBAR (mouse/trackpad — any width) ----------
+   Re-shapes the same sidebar markup into a horizontal top navbar.
+   Applies regardless of viewport width, so a resized Chrome window
+   never drops into mobile mode. No DOM/JS changes. */
+@media (hover: hover) and (pointer: fine) {
   #app-shell {
     display: flex;
     flex-direction: column;
@@ -409,6 +384,7 @@
     gap: 4px;
     flex-wrap: nowrap;
     height: 100%;
+    min-width: 0;
   }
 
   .nav-item { flex-shrink: 0; }
@@ -434,22 +410,25 @@
   .sidebar-collapse-btn { display: none; }
 
   .main-col { min-width: 0; }
-  .topbar { top: var(--navbar-h); }
+  .topbar { top: var(--navbar-h); min-width: 0; }
+  .topbar-title { min-width: 0; }
 
   .page-content {
     max-width: 1600px;
     margin: 0 auto;
+    box-sizing: border-box;
   }
 }
 
-/* ---------- Desktop navbar — fluid narrow desktop ----------
-   Same desktop navbar as the block above; these two tiers only compact
-   spacing/sizing so it keeps fitting as the window narrows towards the
-   768px mobile handoff. Nothing here applies above 1280px, so wide
-   desktop (1366px and up) is completely untouched. #sidebar-nav already
-   scrolls horizontally (overflow-x: auto, above) if items still don't
-   fit, so nothing is ever cut off or overlapping. */
-@media (min-width: 769px) and (max-width: 1280px) {
+/* ---------- DESKTOP NAVBAR — fluid compact tiers ----------
+   Still gated to fine pointer + hover, so these NEVER touch touch
+   devices. Nothing here applies above 1280px, so wide desktop
+   (1366px and up) is completely untouched — only compacts as a
+   desktop window is narrowed, all the way down to small windows.
+   #sidebar-nav already has overflow-x: auto above, so if the 9 nav
+   items still don't fit at any tier, it scrolls horizontally instead
+   of overlapping or spilling out of the viewport. */
+@media (hover: hover) and (pointer: fine) and (max-width: 1280px) {
   .sidebar { padding: 0 20px; }
   #app-shell.sidebar-collapsed .sidebar { padding: 0 20px; }
   .topbar { padding: 0 20px; gap: 12px; }
@@ -457,7 +436,7 @@
   .topbar-search { max-width: 220px; }
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (hover: hover) and (pointer: fine) and (max-width: 1024px) {
   .sidebar { padding: 0 16px; gap: 2px; }
   #app-shell.sidebar-collapsed .sidebar { padding: 0 16px; }
   .sidebar-brand { margin-right: 12px; }
@@ -469,6 +448,59 @@
   .page-content { padding: 18px; }
 }
 
-@media (min-width: 769px) and (max-width: 900px) {
+@media (hover: hover) and (pointer: fine) and (max-width: 900px) {
   .topbar-search { display: none; }
+}
+
+@media (hover: hover) and (pointer: fine) and (max-width: 640px) {
+  .sidebar-brand { margin-right: 8px; }
+  .brand-text span { display: none; }
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar-title small { display: none; }
+  .icon-btn { width: 34px; height: 34px; }
+  .topbar-profile-meta { display: none; }
+  .page-content { padding: 14px; }
+}
+
+/* ---------- MOBILE DRAWER (touch — any width) ----------
+   Applies to touch-primary devices (real phones/tablets) no matter
+   how wide the screen is — this is the existing mobile behavior,
+   unchanged: fixed drawer sidebar, hamburger toggle, hidden search,
+   backdrop. Placed last so it wins over the desktop rules above for
+   any device this query matches. */
+@media (hover: none), (pointer: coarse) {
+  #app-shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+    width: var(--sidebar-w);
+    transform: translateX(-100%);
+    transition: transform var(--dur-slow) var(--ease);
+    box-shadow: var(--shadow-lg);
+  }
+  #app-shell.mobile-open .sidebar { transform: translateX(0); }
+  #app-shell.sidebar-collapsed .sidebar { padding: 20px 16px; }
+  #app-shell.sidebar-collapsed .brand-text { opacity: 1; width: auto; }
+  #app-shell.sidebar-collapsed .nav-item .nav-label { opacity: 1; width: auto; }
+  #app-shell.sidebar-collapsed .nav-item { justify-content: flex-start; }
+  .topbar-mobile-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: var(--r-md);
+    background: var(--panel); border: 1px solid var(--border-soft); color: var(--text);
+  }
+  .topbar-search { display: none; }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed; inset: 0; z-index: 90;
+    background: rgba(0,0,0,0.6);
+    transform: translateZ(0);
+    isolation: isolate;
+  }
+  #app-shell.mobile-open .sidebar-backdrop { display: block; }
+}
+@media (max-width: 640px) and (hover: none), (max-width: 640px) and (pointer: coarse) {
+  .page-content { padding: 18px; }
+  .topbar { padding: 0 16px; }
+  .topbar-profile-meta { display: none; }
 }
