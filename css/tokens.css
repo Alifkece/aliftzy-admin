@@ -86,7 +86,7 @@
   --dur-slow: 420ms;
 
   /* ---- Layout (tidak diubah — breakpoint/ukuran struktural tetap sama) ---- */
-  /* --sidebar-w: 264px; */
+  --sidebar-w: 264px;
   --sidebar-w-collapsed: 78px;
   --topbar-h: 68px;
 }
